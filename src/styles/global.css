@@ -867,12 +867,12 @@ p { text-wrap: pretty; }
   align-items: stretch; min-height: 420px;
 }
 .hero-split-left {
-  padding-right: 48px; padding-bottom: 24px;
+  padding-right: 48px; padding-top: 8px; padding-bottom: 32px;
   display: flex; flex-direction: column; justify-content: center;
 }
 .hero-split-right {
   position: relative; border-left: 1px solid oklch(0.22 0.05 258);
-  height: 480px; overflow: hidden;
+  overflow: hidden; align-self: stretch;
 }
 .hero-email-box {
   margin-top: 32px; padding: 20px 24px;
@@ -1323,7 +1323,39 @@ p { text-wrap: pretty; }
 .code-block-copy:hover { color: var(--text-1); background: var(--bg-2); }
 .code-block-copy--done { color: var(--green); border-color: var(--green); }
 
-/* ── Niche / Industry hub page ── */
+/* ── Hub page (niche + industry dark hero) ── */
+.hub-hero { padding: 0; }
+.hub-breadcrumb { display: flex; align-items: center; gap: 8px; padding: 14px 0; font-size: 13px; }
+.hub-breadcrumb-link { text-decoration: none; transition: opacity 0.15s; }
+.hub-breadcrumb-link:hover { opacity: 0.8; }
+.hub-breadcrumb-sep { opacity: 0.5; }
+.hub-breadcrumb-current { font-weight: 600; }
+.hub-hero-grid { display: grid; grid-template-columns: 1fr 420px; align-items: center; min-height: 420px; }
+.hub-hero-left { padding: 48px 48px 48px 0; display: flex; flex-direction: column; gap: 20px; }
+.hub-hero-right { height: 100%; min-height: 380px; display: flex; align-items: center; justify-content: center; padding: 32px; }
+.hub-channel-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; width: fit-content; }
+.hub-channel-badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.hub-hero-title { font-size: clamp(36px, 5.5vw, 64px); font-weight: 900; letter-spacing: -0.04em; line-height: 1.05; margin: 0; }
+.hub-hero-tagline { font-size: clamp(16px, 2vw, 20px); font-style: italic; font-weight: 600; margin: 0; line-height: 1.4; }
+.hub-hero-desc { font-size: 15px; margin: 0; }
+.hub-hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.hub-stats-row { display: flex; gap: 32px; padding-top: 24px; margin-top: 4px; }
+.hub-stat { display: flex; flex-direction: column; gap: 2px; }
+.hub-stat-value { font-size: 28px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+.hub-stat-label { font-size: 12px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase; }
+.hub-section-header { margin-bottom: 40px; }
+.hub-section-header .section-eyebrow-badge { margin-bottom: 12px; }
+.hub-section-header .section-title { margin-bottom: 8px; }
+
+/* ── Topic navigator grid ── */
+.topic-nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.topic-nav-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-radius: var(--r-lg); border: 1px solid var(--border); background: var(--bg); text-decoration: none; transition: border-color 0.2s, background 0.2s, color 0.2s; color: var(--text); }
+.topic-nav-card:hover { border-color: var(--topic-color, var(--accent)); background: var(--topic-bg, var(--accent-sub)); color: var(--topic-color, var(--accent)); }
+.topic-nav-card:hover .topic-nav-arrow { color: var(--topic-color, var(--accent)); }
+.topic-nav-label { font-size: 14px; font-weight: 600; }
+.topic-nav-arrow { color: var(--text-3); flex-shrink: 0; transition: color 0.2s; }
+
+/* ── Niche / Industry hub page (legacy, used by other niche-hero references) ── */
 .niche-hero { padding: 72px 0 60px; border-bottom: 1px solid var(--border); }
 .niche-hero-content { position: relative; }
 .niche-hero-text { display: flex; flex-direction: column; gap: 12px; max-width: 620px; }
@@ -1370,4 +1402,20 @@ p { text-wrap: pretty; }
   .newsletter-fields .btn { width: 100%; }
   .blog-mega-inner { flex-direction: column; }
   .resources-mega-list { grid-template-columns: 1fr; }
+}
+
+/* ── Hub page responsive ── */
+@media (max-width: 1024px) {
+  .hub-hero-grid { grid-template-columns: 1fr 320px; }
+  .topic-nav-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 860px) {
+  .hub-hero-grid { grid-template-columns: 1fr; }
+  .hub-hero-right { display: none; }
+  .hub-hero-left { padding: 40px 0; }
+  .topic-nav-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .topic-nav-grid { grid-template-columns: 1fr; }
+  .hub-stats-row { gap: 20px; flex-wrap: wrap; }
 }

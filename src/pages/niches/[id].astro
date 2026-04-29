@@ -1,34 +1,15 @@
 ---
-/**
- * src/pages/niches/[id].astro — Niche / Channel Hub Page
- *
- * URL pattern: /niches/:id
- * Examples:
- *   /niches/seo
- *   /niches/ppc
- *   /niches/content
- *
- * STATIC GENERATION:
- * getStaticPaths() generates one page per niche (8 total). Each hub page
- * shows all articles for that channel, the niche's "spirit animal" branding,
- * an FAQ accordion, and a newsletter signup.
- *
- * REACT ISLANDS:
- *   - FAQAccordion (client:visible) — expand/collapse FAQ items
- *   - NewsletterSignup (client:idle) — email capture at bottom
- */
-
 import Layout from '../../layouts/Layout.astro';
 import FAQAccordion from '../../components/react/FAQAccordion';
 import NewsletterSignup from '../../components/react/NewsletterSignup';
+import AnimalIllustration from '../../components/react/AnimalIllustration';
 import ArticleCard from '../../components/astro/ArticleCard.astro';
-import TagBadge from '../../components/astro/TagBadge.astro';
+import ResourceCard from '../../components/astro/ResourceCard.astro';
 
 import {
-  NICHES, ARTICLES, NICHE_ANIMALS, NICHE_HUE,
+  NICHES, ARTICLES, RESOURCES, NICHE_ANIMALS, NICHE_HUE, NICHE_TOPICS,
 } from '../../data/index';
 
-// ── getStaticPaths ────────────────────────────────────────────────────────────
 export function getStaticPaths() {
   return NICHES.map((niche) => ({
     params: { id: niche.id },
@@ -38,17 +19,27 @@ export function getStaticPaths() {
 
 const { niche } = Astro.props;
 
-// Spirit animal / brand data for this niche
-const animal = NICHE_ANIMALS[niche.id];
+const animal  = NICHE_ANIMALS[niche.id];
+const hue     = NICHE_HUE[niche.id] ?? 250;
+const topics  = NICHE_TOPICS[niche.id] ?? [];
 
-// Hue angle for the hero gradient
-const hue = NICHE_HUE[niche.id] ?? 250;
-const heroGradient = `linear-gradient(135deg, oklch(0.90 0.06 ${hue}), oklch(0.82 0.12 ${hue + 30}))`;
+const darkBg       = `oklch(0.17 0.055 ${hue})`;
+const accentColor  = `oklch(0.65 0.18 ${hue})`;
+const accentSubtle = `oklch(0.28 0.08 ${hue})`;
+const borderColor  = `oklch(0.25 0.06 ${hue})`;
+const textMuted    = `oklch(0.65 0.05 ${hue})`;
 
-// Articles belonging to this niche (article.niche matches niche.name)
-const nicheArticles = ARTICLES.filter((a) => a.niche === niche.name);
+const nicheArticles  = ARTICLES.filter((a) => a.niche === niche.name);
+const pillarArticles = nicheArticles.slice(0, 3);
+const latestArticles = nicheArticles.slice(0, 6);
+const highlightResources = RESOURCES.slice(0, 3);
 
-// FAQ items — generic placeholder; swap for real niche-specific FAQs from CMS.
+const hubStats = [
+  { value: String(niche.count), label: 'Guides' },
+  { value: '8',                 label: 'Subtopics' },
+  { value: '200+',              label: 'Site audits' },
+];
+
 const faqs = [
   {
     question: `What is ${niche.name} and why does it matter for B2B companies?`,
@@ -56,7 +47,7 @@ const faqs = [
   },
   {
     question: `How long does it take to see results from ${niche.name}?`,
-    answer: `Timelines vary by tactic and competitive landscape. Most programs see meaningful signal within 60-90 days, but sustainable compounding results typically emerge at the 6-month mark.`,
+    answer: `Timelines vary by tactic and competitive landscape. Most programs see meaningful signal within 60–90 days, but sustainable compounding results typically emerge at the 6-month mark.`,
   },
   {
     question: `What's the biggest mistake B2B teams make with ${niche.name}?`,
@@ -72,66 +63,154 @@ const canonicalUrl = `https://gtmremixed.com/niches/${niche.id}`;
 ---
 
 <Layout
-  title={`${niche.name} — Channel Hub`}
-  description={`Guides, frameworks, and tools for ${niche.name}. ${niche.count} in-depth resources for B2B marketing teams.`}
+  title={`${niche.name} — Channel Hub | GTM Remixed`}
+  description={`${animal?.tagline ?? ''} ${niche.count} in-depth guides, frameworks, and playbooks for ${niche.name}. Written by practitioners.`}
   canonicalUrl={canonicalUrl}
 >
-  <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+
+  <!-- ── DARK HERO ──────────────────────────────────────────────────────────── -->
   <section
-    class="niche-hero"
-    style={`background: ${heroGradient}`}
-    aria-labelledby="niche-hero-title"
+    class="hub-hero"
+    style={`background: ${darkBg}; border-bottom: 1px solid ${borderColor};`}
+    aria-labelledby="hub-hero-title"
   >
     <div class="container">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <ol class="breadcrumb-list">
-          <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
-          <li class="breadcrumb-item breadcrumb-item--current" aria-current="page">
-            {niche.name}
-          </li>
-        </ol>
+
+      <!-- Breadcrumb -->
+      <nav class="hub-breadcrumb" aria-label="Breadcrumb" style={`border-bottom: 1px solid ${borderColor};`}>
+        <a href="/" class="hub-breadcrumb-link" style={`color: ${textMuted};`}>Home</a>
+        <span class="hub-breadcrumb-sep" style={`color: ${textMuted};`}>›</span>
+        <a href="/blog" class="hub-breadcrumb-link" style={`color: ${textMuted};`}>Channels</a>
+        <span class="hub-breadcrumb-sep" style={`color: ${textMuted};`}>›</span>
+        <span class="hub-breadcrumb-current" style={`color: ${accentColor};`}>{niche.name}</span>
       </nav>
 
-      <div class="niche-hero-content">
-        <div class="niche-hero-text">
-          {animal && (
-            <p class="niche-hero-animal">
-              <span aria-hidden="true">🦅</span> The {animal.name} channel
-            </p>
-          )}
-          <h1 id="niche-hero-title" class="niche-hero-title">{niche.name}</h1>
+      <!-- Two-column hero grid -->
+      <div class="hub-hero-grid">
+
+        <!-- Left: copy -->
+        <div class="hub-hero-left">
+          <!-- Channel badge -->
+          <div class="hub-channel-badge" style={`background: ${accentSubtle}; color: ${accentColor}; border: 1px solid ${borderColor};`}>
+            <span class="hub-channel-badge-dot" style={`background: ${accentColor};`}></span>
+            Channel Hub · {niche.name}
+          </div>
+
+          <!-- Headline -->
+          <h1 id="hub-hero-title" class="hub-hero-title" style="color: white;">
+            {niche.name}
+          </h1>
+
           {animal && (
             <>
-              <p class="niche-hero-tagline">{animal.tagline}</p>
-              <p class="niche-hero-desc">{animal.desc}</p>
+              <!-- Italic tagline -->
+              <p class="hub-hero-tagline" style={`color: ${accentColor};`}>"{animal.tagline}"</p>
+              <!-- Description -->
+              <p class="hub-hero-desc" style="color: oklch(0.72 0.04 258); line-height: 1.7;">
+                {animal.desc}
+              </p>
             </>
           )}
-          <div class="niche-hero-meta">
-            <span class="tag">{niche.count} guides</span>
-            <a href="/blog" class="btn btn-outline btn-sm">View all articles →</a>
+
+          <!-- CTA buttons -->
+          <div class="hub-hero-actions">
+            <a href="/blog" class="btn btn-primary">
+              Read all {niche.name} guides
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a href="/resources" class="btn btn-ghost" style={`border-color: ${borderColor}; color: oklch(0.80 0.04 258);`}>
+              Free resources
+            </a>
+          </div>
+
+          <!-- Stats row -->
+          <div class="hub-stats-row" style={`border-top: 1px solid ${borderColor};`}>
+            {hubStats.map((stat) => (
+              <div class="hub-stat">
+                <div class="hub-stat-value" style={`color: ${accentColor};`}>{stat.value}</div>
+                <div class="hub-stat-label" style="color: oklch(0.60 0.04 258);">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
+
+        <!-- Right: illustration -->
+        <div class="hub-hero-right" style={`border-left: 1px solid ${borderColor};`}>
+          <AnimalIllustration id={niche.id} client:idle />
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- ── Articles ──────────────────────────────────────────────────────────── -->
-  <section class="page-section" aria-labelledby="niche-articles-heading">
-    <div class="container">
-      <header class="section-header">
-        <h2 id="niche-articles-heading" class="section-title">
-          {niche.name} guides
-        </h2>
-        <p class="section-subtitle">
-          {nicheArticles.length > 0
-            ? `${nicheArticles.length} articles covering every aspect of ${niche.name}.`
-            : `More ${niche.name} guides coming soon.`}
-        </p>
-      </header>
+  <!-- ── START HERE (pillar guides) ────────────────────────────────────────── -->
+  {pillarArticles.length > 0 && (
+    <section class="page-section" aria-labelledby="pillar-heading" style="border-bottom: 1px solid var(--border);">
+      <div class="container">
+        <div class="hub-section-header">
+          <div class="section-eyebrow-badge">Start Here</div>
+          <h2 id="pillar-heading" class="section-title">
+            Essential {niche.name} guides
+          </h2>
+          <p class="section-subtitle">The foundational resources every {niche.name} practitioner needs.</p>
+        </div>
+        <div class="grid-3">
+          {pillarArticles.map((article) => (
+            <ArticleCard article={article} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
-      {nicheArticles.length > 0 ? (
-        <div class="articles-grid articles-grid--3">
-          {nicheArticles.map((article) => (
+  <!-- ── TOPIC NAVIGATOR ───────────────────────────────────────────────────── -->
+  {topics.length > 0 && (
+    <section class="page-section section-alt" aria-labelledby="topics-heading" style="border-bottom: 1px solid var(--border);">
+      <div class="container">
+        <div class="hub-section-header">
+          <div class="section-eyebrow-badge">Browse by Topic</div>
+          <h2 id="topics-heading" class="section-title">
+            Explore {niche.name} by sub-topic
+          </h2>
+        </div>
+        <div class="topic-nav-grid">
+          {topics.map((topic) => (
+            <a
+              href={`/blog?tag=${topic.slug}`}
+              class="topic-nav-card"
+              style={`--topic-color: ${accentColor}; --topic-bg: ${accentSubtle}; --topic-border: ${borderColor};`}
+            >
+              <span class="topic-nav-label">{topic.label}</span>
+              <svg class="topic-nav-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ── LATEST ARTICLES ───────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="latest-heading" style="border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <div class="section-header section-header--with-link">
+        <div>
+          <div class="section-eyebrow">Latest Guides</div>
+          <h2 id="latest-heading" class="section-title">
+            {latestArticles.length > 0
+              ? `Latest ${niche.name} guides`
+              : `${niche.name} guides coming soon`}
+          </h2>
+        </div>
+        <a href="/blog" class="section-view-all">See all articles →</a>
+      </div>
+
+      {latestArticles.length > 0 ? (
+        <div class="grid-3">
+          {latestArticles.map((article) => (
             <ArticleCard article={article} />
           ))}
         </div>
@@ -144,26 +223,40 @@ const canonicalUrl = `https://gtmremixed.com/niches/${niche.id}`;
     </div>
   </section>
 
-  <!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
-  <!--
-    FAQAccordion uses client:visible — it's typically below the fold,
-    so we defer hydration until the user scrolls to it.
-  -->
-  <section class="page-section" aria-labelledby="niche-faq-heading">
+  <!-- ── RESOURCE HIGHLIGHTS ───────────────────────────────────────────────── -->
+  <section class="page-section section-alt" aria-labelledby="resources-heading" style="border-bottom: 1px solid var(--border);">
     <div class="container">
-      <header class="section-header">
-        <h2 id="niche-faq-heading" class="section-title">
-          Frequently asked questions
-        </h2>
-      </header>
+      <div class="section-header section-header--with-link">
+        <div>
+          <div class="section-eyebrow">Free Resources</div>
+          <h2 id="resources-heading" class="section-title">Templates and tools for {niche.name}</h2>
+        </div>
+        <a href="/resources" class="section-view-all">View all resources →</a>
+      </div>
+      <div class="grid-3">
+        {highlightResources.map((resource) => (
+          <ResourceCard resource={resource} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="faq-heading" style="border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <div class="hub-section-header">
+        <div class="section-eyebrow-badge">FAQ</div>
+        <h2 id="faq-heading" class="section-title">Frequently asked questions</h2>
+      </div>
       <FAQAccordion client:visible items={faqs} />
     </div>
   </section>
 
-  <!-- ── Newsletter ────────────────────────────────────────────────────────── -->
-  <section class="page-section newsletter-section" aria-label="Newsletter">
+  <!-- ── NEWSLETTER ────────────────────────────────────────────────────────── -->
+  <section class="page-section newsletter-section" aria-label="Newsletter signup">
     <div class="container">
       <NewsletterSignup client:idle />
     </div>
   </section>
+
 </Layout>

@@ -1,34 +1,15 @@
 ---
-/**
- * src/pages/industries/[id].astro — Industry Hub Page
- *
- * URL pattern: /industries/:id
- * Examples:
- *   /industries/saas
- *   /industries/ecommerce
- *   /industries/healthcare
- *
- * STATIC GENERATION:
- * getStaticPaths() generates one page per industry (8 total).
- * Each hub page shows all articles for that industry vertical, the industry's
- * positioning description, channel breakdown stats, an FAQ accordion,
- * and a newsletter signup.
- *
- * REACT ISLANDS:
- *   - FAQAccordion (client:visible) — expand/collapse FAQ items
- *   - NewsletterSignup (client:idle) — email capture at bottom
- */
-
 import Layout from '../../layouts/Layout.astro';
 import FAQAccordion from '../../components/react/FAQAccordion';
 import NewsletterSignup from '../../components/react/NewsletterSignup';
+import IndustryIllustration from '../../components/react/IndustryIllustration';
 import ArticleCard from '../../components/astro/ArticleCard.astro';
+import ResourceCard from '../../components/astro/ResourceCard.astro';
 
 import {
-  INDUSTRIES, ARTICLES, INDUSTRY_META, INDUSTRY_HUE, INDUSTRY_ICONS,
+  INDUSTRIES, ARTICLES, RESOURCES, INDUSTRY_META, INDUSTRY_HUE, INDUSTRY_TOPICS,
 } from '../../data/index';
 
-// ── getStaticPaths ────────────────────────────────────────────────────────────
 export function getStaticPaths() {
   return INDUSTRIES.map((industry) => ({
     params: { id: industry.id },
@@ -38,17 +19,27 @@ export function getStaticPaths() {
 
 const { industry } = Astro.props;
 
-// Industry positioning copy
-const meta = INDUSTRY_META[industry.id];
+const meta   = INDUSTRY_META[industry.id];
+const hue    = INDUSTRY_HUE[industry.id] ?? 250;
+const topics = INDUSTRY_TOPICS[industry.id] ?? [];
 
-// Hero gradient colour
-const hue = INDUSTRY_HUE[industry.id] ?? 250;
-const heroGradient = `linear-gradient(135deg, oklch(0.90 0.06 ${hue}), oklch(0.82 0.12 ${hue + 30}))`;
+const darkBg       = `oklch(0.17 0.055 ${hue})`;
+const accentColor  = `oklch(0.65 0.18 ${hue})`;
+const accentSubtle = `oklch(0.28 0.08 ${hue})`;
+const borderColor  = `oklch(0.25 0.06 ${hue})`;
+const textMuted    = `oklch(0.65 0.05 ${hue})`;
 
-// Articles for this industry — match on display name (article.industry === industry.name)
-const industryArticles = ARTICLES.filter((a) => a.industry === industry.name);
+const industryArticles   = ARTICLES.filter((a) => a.industry === industry.name);
+const pillarArticles     = industryArticles.slice(0, 3);
+const latestArticles     = industryArticles.slice(0, 6);
+const highlightResources = RESOURCES.slice(0, 3);
 
-// FAQ items — industry-specific placeholder
+const hubStats = [
+  { value: String(industry.count), label: 'Guides' },
+  { value: '8',                    label: 'Channels covered' },
+  { value: '12',                   label: 'Practitioners' },
+];
+
 const faqs = [
   {
     question: `What makes ${industry.name} marketing different from other verticals?`,
@@ -64,81 +55,166 @@ const faqs = [
   },
   {
     question: `What budget should a ${industry.name} company allocate to marketing?`,
-    answer: `Industry benchmarks for ${industry.name} range from 8-15% of revenue for growth-stage companies and 5-10% for mature businesses. The right number depends on your growth targets and competitive position.`,
+    answer: `Industry benchmarks for ${industry.name} range from 8–15% of revenue for growth-stage companies and 5–10% for mature businesses. The right number depends on your growth targets and competitive position.`,
   },
 ];
 
 const canonicalUrl = `https://gtmremixed.com/industries/${industry.id}`;
-const icon = INDUSTRY_ICONS[industry.id] ?? '🏢';
 ---
 
 <Layout
-  title={`${industry.name} Marketing — Industry Hub`}
+  title={`${industry.name} Marketing — Industry Hub | GTM Remixed`}
   description={meta?.tagline ?? `GTM strategies, guides, and frameworks for ${industry.name} marketing teams.`}
   canonicalUrl={canonicalUrl}
 >
-  <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+
+  <!-- ── DARK HERO ──────────────────────────────────────────────────────────── -->
   <section
-    class="niche-hero"
-    style={`background: ${heroGradient}`}
-    aria-labelledby="industry-hero-title"
+    class="hub-hero"
+    style={`background: ${darkBg}; border-bottom: 1px solid ${borderColor};`}
+    aria-labelledby="hub-hero-title"
   >
     <div class="container">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <ol class="breadcrumb-list">
-          <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
-          <li class="breadcrumb-item breadcrumb-item--current" aria-current="page">
-            {industry.name}
-          </li>
-        </ol>
+
+      <!-- Breadcrumb -->
+      <nav class="hub-breadcrumb" aria-label="Breadcrumb" style={`border-bottom: 1px solid ${borderColor};`}>
+        <a href="/" class="hub-breadcrumb-link" style={`color: ${textMuted};`}>Home</a>
+        <span class="hub-breadcrumb-sep" style={`color: ${textMuted};`}>›</span>
+        <a href="/blog" class="hub-breadcrumb-link" style={`color: ${textMuted};`}>Industries</a>
+        <span class="hub-breadcrumb-sep" style={`color: ${textMuted};`}>›</span>
+        <span class="hub-breadcrumb-current" style={`color: ${accentColor};`}>{industry.name}</span>
       </nav>
 
-      <div class="niche-hero-content">
-        <div class="niche-hero-text">
-          <p class="niche-hero-animal">
-            <span aria-hidden="true">{icon}</span> {industry.name}
-          </p>
-          <h1 id="industry-hero-title" class="niche-hero-title">
+      <!-- Two-column hero grid -->
+      <div class="hub-hero-grid">
+
+        <!-- Left: copy -->
+        <div class="hub-hero-left">
+          <!-- Industry badge -->
+          <div class="hub-channel-badge" style={`background: ${accentSubtle}; color: ${accentColor}; border: 1px solid ${borderColor};`}>
+            <span class="hub-channel-badge-dot" style={`background: ${accentColor};`}></span>
+            Industry Hub · {industry.name}
+          </div>
+
+          <!-- Headline -->
+          <h1 id="hub-hero-title" class="hub-hero-title" style="color: white;">
             {industry.name} Marketing
           </h1>
+
           {meta && (
             <>
-              <p class="niche-hero-tagline">{meta.tagline}</p>
-              <p class="niche-hero-desc">{meta.desc}</p>
+              <p class="hub-hero-tagline" style={`color: ${accentColor};`}>"{meta.tagline}"</p>
+              <p class="hub-hero-desc" style="color: oklch(0.72 0.04 258); line-height: 1.7;">
+                {meta.desc}
+              </p>
             </>
           )}
-          <div class="niche-hero-meta">
-            <span class="tag">{industry.count} articles</span>
-            <a href="/blog" class="btn btn-outline btn-sm">View all articles →</a>
+
+          <!-- CTA buttons -->
+          <div class="hub-hero-actions">
+            <a href="/blog" class="btn btn-primary">
+              Read all {industry.name} guides
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a href="/resources" class="btn btn-ghost" style={`border-color: ${borderColor}; color: oklch(0.80 0.04 258);`}>
+              Free resources
+            </a>
+          </div>
+
+          <!-- Stats row -->
+          <div class="hub-stats-row" style={`border-top: 1px solid ${borderColor};`}>
+            {hubStats.map((stat) => (
+              <div class="hub-stat">
+                <div class="hub-stat-value" style={`color: ${accentColor};`}>{stat.value}</div>
+                <div class="hub-stat-label" style="color: oklch(0.60 0.04 258);">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
+
+        <!-- Right: illustration -->
+        <div class="hub-hero-right" style={`border-left: 1px solid ${borderColor};`}>
+          <IndustryIllustration id={industry.id} client:idle />
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- ── Articles ──────────────────────────────────────────────────────────── -->
-  <section class="page-section" aria-labelledby="industry-articles-heading">
-    <div class="container">
-      <header class="section-header">
-        <h2 id="industry-articles-heading" class="section-title">
-          {industry.name} guides
-        </h2>
-        {industryArticles.length > 0 && (
-          <p class="section-subtitle">
-            {industryArticles.length} article{industryArticles.length !== 1 ? 's' : ''} tailored to the {industry.name} vertical.
-          </p>
-        )}
-      </header>
+  <!-- ── START HERE (pillar guides) ────────────────────────────────────────── -->
+  {pillarArticles.length > 0 && (
+    <section class="page-section" aria-labelledby="pillar-heading" style="border-bottom: 1px solid var(--border);">
+      <div class="container">
+        <div class="hub-section-header">
+          <div class="section-eyebrow-badge">Start Here</div>
+          <h2 id="pillar-heading" class="section-title">
+            Essential {industry.name} guides
+          </h2>
+          <p class="section-subtitle">The foundational resources every {industry.name} marketing team needs.</p>
+        </div>
+        <div class="grid-3">
+          {pillarArticles.map((article) => (
+            <ArticleCard article={article} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
-      {industryArticles.length > 0 ? (
-        <div class="articles-grid articles-grid--3">
-          {industryArticles.map((article) => (
+  <!-- ── TOPIC NAVIGATOR ───────────────────────────────────────────────────── -->
+  {topics.length > 0 && (
+    <section class="page-section section-alt" aria-labelledby="topics-heading" style="border-bottom: 1px solid var(--border);">
+      <div class="container">
+        <div class="hub-section-header">
+          <div class="section-eyebrow-badge">Browse by Topic</div>
+          <h2 id="topics-heading" class="section-title">
+            Explore {industry.name} marketing by topic
+          </h2>
+        </div>
+        <div class="topic-nav-grid">
+          {topics.map((topic) => (
+            <a
+              href={`/blog?tag=${topic.slug}`}
+              class="topic-nav-card"
+              style={`--topic-color: ${accentColor}; --topic-bg: ${accentSubtle}; --topic-border: ${borderColor};`}
+            >
+              <span class="topic-nav-label">{topic.label}</span>
+              <svg class="topic-nav-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ── LATEST ARTICLES ───────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="latest-heading" style="border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <div class="section-header section-header--with-link">
+        <div>
+          <div class="section-eyebrow">Latest Guides</div>
+          <h2 id="latest-heading" class="section-title">
+            {latestArticles.length > 0
+              ? `Latest ${industry.name} marketing guides`
+              : `${industry.name} guides coming soon`}
+          </h2>
+        </div>
+        <a href="/blog" class="section-view-all">See all articles →</a>
+      </div>
+
+      {latestArticles.length > 0 ? (
+        <div class="grid-3">
+          {latestArticles.map((article) => (
             <ArticleCard article={article} />
           ))}
         </div>
       ) : (
         <div class="empty-state">
-          <p>Industry-specific articles for {industry.name} are coming soon.</p>
+          <p>Industry-specific guides for {industry.name} are coming soon.</p>
           <p>Browse our channel guides in the meantime — the frameworks apply across verticals.</p>
           <a href="/blog" class="btn btn-outline btn-sm">Browse all articles →</a>
         </div>
@@ -146,20 +222,40 @@ const icon = INDUSTRY_ICONS[industry.id] ?? '🏢';
     </div>
   </section>
 
-  <!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
-  <section class="page-section" aria-labelledby="industry-faq-heading">
+  <!-- ── RESOURCE HIGHLIGHTS ───────────────────────────────────────────────── -->
+  <section class="page-section section-alt" aria-labelledby="resources-heading" style="border-bottom: 1px solid var(--border);">
     <div class="container">
-      <header class="section-header">
-        <h2 id="industry-faq-heading" class="section-title">Frequently asked questions</h2>
-      </header>
+      <div class="section-header section-header--with-link">
+        <div>
+          <div class="section-eyebrow">Free Resources</div>
+          <h2 id="resources-heading" class="section-title">Templates and tools for {industry.name}</h2>
+        </div>
+        <a href="/resources" class="section-view-all">View all resources →</a>
+      </div>
+      <div class="grid-3">
+        {highlightResources.map((resource) => (
+          <ResourceCard resource={resource} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="faq-heading" style="border-bottom: 1px solid var(--border);">
+    <div class="container">
+      <div class="hub-section-header">
+        <div class="section-eyebrow-badge">FAQ</div>
+        <h2 id="faq-heading" class="section-title">Frequently asked questions</h2>
+      </div>
       <FAQAccordion client:visible items={faqs} />
     </div>
   </section>
 
-  <!-- ── Newsletter ────────────────────────────────────────────────────────── -->
-  <section class="page-section newsletter-section" aria-label="Newsletter">
+  <!-- ── NEWSLETTER ────────────────────────────────────────────────────────── -->
+  <section class="page-section newsletter-section" aria-label="Newsletter signup">
     <div class="container">
       <NewsletterSignup client:idle />
     </div>
   </section>
+
 </Layout>

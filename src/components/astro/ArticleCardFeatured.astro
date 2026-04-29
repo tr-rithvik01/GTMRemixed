@@ -1,0 +1,82 @@
+---
+/**
+ * ArticleCardFeatured.astro — large featured article card for the homepage hero section.
+ *
+ * WHY .astro?
+ * Same reason as ArticleCard: purely static markup, no client state needed.
+ * Featured cards take up more visual real estate and include author avatar,
+ * multiple tags, and a larger image area.
+ *
+ * PROPS:
+ *   article {Article} — article object from src/data/index.ts
+ */
+
+import type { Article } from '../../data/index';
+import TagBadge from './TagBadge.astro';
+import ImgPlaceholder from './ImgPlaceholder.astro';
+
+interface Props {
+  article: Article;
+}
+
+const { article } = Astro.props;
+
+// article.date is already a human-readable string like "April 18, 2026"
+const date = article.date;
+---
+
+<article class="article-card-featured">
+  <!-- Large image -->
+  <a href={`/blog/${article.slug}`} class="article-featured-img-link" tabindex="-1" aria-hidden="true">
+    <ImgPlaceholder aspect="video" />
+    {article.niche && (
+      <span class="article-featured-channel-badge">
+        {article.niche.toUpperCase()}
+      </span>
+    )}
+  </a>
+
+  <div class="article-featured-body">
+    <!-- Tags row -->
+    <div class="article-featured-tags">
+      {article.niche && (
+        <TagBadge label={article.niche} variant="niche" href={`/niches/${article.niche.toLowerCase().replace(/\s+/g, '-')}`} />
+      )}
+      {article.industry && article.industry !== 'All Industries' && (
+        <TagBadge label={article.industry} variant="industry" href={`/industries/${article.industry.toLowerCase().replace(/\s+/g, '')}`} />
+      )}
+    </div>
+
+    <!-- Title -->
+    <h2 class="article-featured-title">
+      <a href={`/blog/${article.slug}`} class="article-featured-link">
+        {article.title}
+      </a>
+    </h2>
+
+    <!-- Excerpt -->
+    <p class="article-featured-excerpt">{article.excerpt}</p>
+
+    <!-- Author + meta — article.author is { name, initials, role } -->
+    <div class="article-featured-meta">
+      <div class="author-avatar-sm" aria-hidden="true">
+        {article.author.initials}
+      </div>
+      <div class="article-featured-meta-text">
+        <span class="article-featured-author">{article.author.name}</span>
+        <span class="article-featured-divider" aria-hidden="true">·</span>
+        <span>{date}</span>
+        {article.readTime && (
+          <>
+            <span class="article-featured-divider" aria-hidden="true">·</span>
+            <span>{article.readTime} read</span>
+          </>
+        )}
+      </div>
+    </div>
+
+    <a href={`/blog/${article.slug}`} class="btn btn-outline btn-sm article-featured-cta">
+      Read article →
+    </a>
+  </div>
+</article>

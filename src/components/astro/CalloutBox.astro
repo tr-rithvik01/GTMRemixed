@@ -1,0 +1,52 @@
+---
+/**
+ * CalloutBox.astro — highlighted callout boxes for inline article tips/warnings.
+ *
+ * WHY .astro?
+ * Static block with no interactive state. Uses CSS classes + named slots for
+ * optional icon override. Zero JS.
+ *
+ * VARIANTS:
+ *   'tip'     — green / info — for helpful tips and best practices
+ *   'warning' — amber        — for caveats and things to watch out for
+ *   'danger'  — red          — for critical warnings
+ *   'info'    — blue         — for neutral informational asides
+ *   'quote'   — neutral grey — for blockquote-style callouts
+ *
+ * USAGE:
+ *   <CalloutBox variant="tip" title="Pro tip">
+ *     Use server-side rendering for pages that change frequently.
+ *   </CalloutBox>
+ */
+
+interface Props {
+  variant?: 'tip' | 'warning' | 'danger' | 'info' | 'quote';
+  title?: string;
+}
+
+const { variant = 'info', title } = Astro.props;
+
+// Default icons per variant — override by filling the 'icon' slot
+const defaultIcons: Record<string, string> = {
+  tip:     '💡',
+  warning: '⚠️',
+  danger:  '🚨',
+  info:    'ℹ️',
+  quote:   '💬',
+};
+
+const icon = defaultIcons[variant] ?? 'ℹ️';
+---
+
+<aside class={`callout callout--${variant} callout-${variant}`} role="note">
+  <div class="callout-icon" aria-hidden="true">
+    <!-- Named slot: provide your own icon element, or fall back to emoji -->
+    <slot name="icon">{icon}</slot>
+  </div>
+  <div class="callout-content">
+    {title && <strong class="callout-title">{title}</strong>}
+    <div class="callout-body">
+      <slot />
+    </div>
+  </div>
+</aside>

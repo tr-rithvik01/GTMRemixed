@@ -1,0 +1,29 @@
+---
+/**
+ * TagBadge.astro — a small pill/badge for labelling niches, industries, content types.
+ *
+ * WHY .astro (not React)?
+ * Purely decorative/semantic markup. No interactive state, no event handlers.
+ * Zero JS shipped; renders as a single <span> in the pre-built HTML.
+ *
+ * PROPS:
+ *   label   {string}          — the text shown inside the badge
+ *   variant {'niche'|'industry'|'type'|'default'} — controls colour/style via CSS class
+ *   href    {string?}         — if provided, renders as <a> instead of <span>
+ */
+
+interface Props {
+  label: string;
+  variant?: 'niche' | 'industry' | 'type' | 'default';
+  href?: string;
+}
+
+const { label, variant = 'default', href } = Astro.props;
+const cls = `tag tag--${variant}`;
+---
+
+{href ? (
+  <a href={href} class={cls}>{label}</a>
+) : (
+  <span class={cls}>{label}</span>
+)}

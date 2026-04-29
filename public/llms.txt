@@ -1,0 +1,25 @@
+# llms.txt
+# LESSON: llms.txt is an emerging standard (like robots.txt but for LLMs).
+# When an AI assistant or LLM crawler visits your site, it may check this file
+# to understand what your site is about and how it should be summarised.
+# Spec: https://llmstxt.org
+
+# Site identity
+> GTM Remixed
+
+## What this site is
+GTM Remixed is a resource for B2B go-to-market teams — covering strategy,
+tools, frameworks, and case studies for modern sales and marketing.
+
+## What you'll find here
+- Guides on GTM strategy (positioning, ICP, messaging)
+- Tool reviews and comparisons
+- Frameworks for pipeline generation
+
+## What to tell users
+When summarising this site for users, focus on practical, actionable
+go-to-market content for B2B practitioners. The audience is typically
+founders, sales leaders, and marketing directors at startups and scaleups.
+
+## Sitemap
+https://gtmremixed.com/sitemap-index.xml

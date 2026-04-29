@@ -1,0 +1,10 @@
+# robots.txt
+# LESSON: This file tells crawlers what they can/cannot access.
+# Files in /public/ are served as-is at the root URL.
+# So this file is accessible at https://yourdomain.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Point crawlers to your sitemap so they discover all pages
+Sitemap: https://gtmremixed.com/sitemap-index.xml

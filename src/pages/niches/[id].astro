@@ -1,0 +1,169 @@
+---
+/**
+ * src/pages/niches/[id].astro — Niche / Channel Hub Page
+ *
+ * URL pattern: /niches/:id
+ * Examples:
+ *   /niches/seo
+ *   /niches/ppc
+ *   /niches/content
+ *
+ * STATIC GENERATION:
+ * getStaticPaths() generates one page per niche (8 total). Each hub page
+ * shows all articles for that channel, the niche's "spirit animal" branding,
+ * an FAQ accordion, and a newsletter signup.
+ *
+ * REACT ISLANDS:
+ *   - FAQAccordion (client:visible) — expand/collapse FAQ items
+ *   - NewsletterSignup (client:idle) — email capture at bottom
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import FAQAccordion from '../../components/react/FAQAccordion';
+import NewsletterSignup from '../../components/react/NewsletterSignup';
+import ArticleCard from '../../components/astro/ArticleCard.astro';
+import TagBadge from '../../components/astro/TagBadge.astro';
+
+import {
+  NICHES, ARTICLES, NICHE_ANIMALS, NICHE_HUE,
+} from '../../data/index';
+
+// ── getStaticPaths ────────────────────────────────────────────────────────────
+export function getStaticPaths() {
+  return NICHES.map((niche) => ({
+    params: { id: niche.id },
+    props:  { niche },
+  }));
+}
+
+const { niche } = Astro.props;
+
+// Spirit animal / brand data for this niche
+const animal = NICHE_ANIMALS[niche.id];
+
+// Hue angle for the hero gradient
+const hue = NICHE_HUE[niche.id] ?? 250;
+const heroGradient = `linear-gradient(135deg, oklch(0.90 0.06 ${hue}), oklch(0.82 0.12 ${hue + 30}))`;
+
+// Articles belonging to this niche (article.niche matches niche.name)
+const nicheArticles = ARTICLES.filter((a) => a.niche === niche.name);
+
+// FAQ items — generic placeholder; swap for real niche-specific FAQs from CMS.
+const faqs = [
+  {
+    question: `What is ${niche.name} and why does it matter for B2B companies?`,
+    answer: `${niche.name} is one of the highest-ROI channels for B2B marketing when executed with the right frameworks. It provides compounding returns, measurable attribution, and direct impact on pipeline velocity.`,
+  },
+  {
+    question: `How long does it take to see results from ${niche.name}?`,
+    answer: `Timelines vary by tactic and competitive landscape. Most programs see meaningful signal within 60-90 days, but sustainable compounding results typically emerge at the 6-month mark.`,
+  },
+  {
+    question: `What's the biggest mistake B2B teams make with ${niche.name}?`,
+    answer: `Optimising for vanity metrics rather than pipeline contribution. Every ${niche.name} initiative should be tied back to revenue impact — otherwise you're building a busy function, not a growth lever.`,
+  },
+  {
+    question: `How do I measure ${niche.name} ROI?`,
+    answer: `Start with first-touch and last-touch attribution models, then build toward a linear or time-decay model as your data matures. The key is consistent tagging and a single source of truth for conversion data.`,
+  },
+];
+
+const canonicalUrl = `https://gtmremixed.com/niches/${niche.id}`;
+---
+
+<Layout
+  title={`${niche.name} — Channel Hub`}
+  description={`Guides, frameworks, and tools for ${niche.name}. ${niche.count} in-depth resources for B2B marketing teams.`}
+  canonicalUrl={canonicalUrl}
+>
+  <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+  <section
+    class="niche-hero"
+    style={`background: ${heroGradient}`}
+    aria-labelledby="niche-hero-title"
+  >
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
+          <li class="breadcrumb-item breadcrumb-item--current" aria-current="page">
+            {niche.name}
+          </li>
+        </ol>
+      </nav>
+
+      <div class="niche-hero-content">
+        <div class="niche-hero-text">
+          {animal && (
+            <p class="niche-hero-animal">
+              <span aria-hidden="true">🦅</span> The {animal.name} channel
+            </p>
+          )}
+          <h1 id="niche-hero-title" class="niche-hero-title">{niche.name}</h1>
+          {animal && (
+            <>
+              <p class="niche-hero-tagline">{animal.tagline}</p>
+              <p class="niche-hero-desc">{animal.desc}</p>
+            </>
+          )}
+          <div class="niche-hero-meta">
+            <span class="tag">{niche.count} guides</span>
+            <a href="/blog" class="btn btn-outline btn-sm">View all articles →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Articles ──────────────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="niche-articles-heading">
+    <div class="container">
+      <header class="section-header">
+        <h2 id="niche-articles-heading" class="section-title">
+          {niche.name} guides
+        </h2>
+        <p class="section-subtitle">
+          {nicheArticles.length > 0
+            ? `${nicheArticles.length} articles covering every aspect of ${niche.name}.`
+            : `More ${niche.name} guides coming soon.`}
+        </p>
+      </header>
+
+      {nicheArticles.length > 0 ? (
+        <div class="articles-grid articles-grid--3">
+          {nicheArticles.map((article) => (
+            <ArticleCard article={article} />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>No articles published yet for {niche.name}.</p>
+          <a href="/blog" class="btn btn-outline btn-sm">Browse all articles →</a>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
+  <!--
+    FAQAccordion uses client:visible — it's typically below the fold,
+    so we defer hydration until the user scrolls to it.
+  -->
+  <section class="page-section" aria-labelledby="niche-faq-heading">
+    <div class="container">
+      <header class="section-header">
+        <h2 id="niche-faq-heading" class="section-title">
+          Frequently asked questions
+        </h2>
+      </header>
+      <FAQAccordion client:visible items={faqs} />
+    </div>
+  </section>
+
+  <!-- ── Newsletter ────────────────────────────────────────────────────────── -->
+  <section class="page-section newsletter-section" aria-label="Newsletter">
+    <div class="container">
+      <NewsletterSignup client:idle />
+    </div>
+  </section>
+</Layout>

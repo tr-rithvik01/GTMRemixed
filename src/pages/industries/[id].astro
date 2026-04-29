@@ -1,0 +1,165 @@
+---
+/**
+ * src/pages/industries/[id].astro — Industry Hub Page
+ *
+ * URL pattern: /industries/:id
+ * Examples:
+ *   /industries/saas
+ *   /industries/ecommerce
+ *   /industries/healthcare
+ *
+ * STATIC GENERATION:
+ * getStaticPaths() generates one page per industry (8 total).
+ * Each hub page shows all articles for that industry vertical, the industry's
+ * positioning description, channel breakdown stats, an FAQ accordion,
+ * and a newsletter signup.
+ *
+ * REACT ISLANDS:
+ *   - FAQAccordion (client:visible) — expand/collapse FAQ items
+ *   - NewsletterSignup (client:idle) — email capture at bottom
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import FAQAccordion from '../../components/react/FAQAccordion';
+import NewsletterSignup from '../../components/react/NewsletterSignup';
+import ArticleCard from '../../components/astro/ArticleCard.astro';
+
+import {
+  INDUSTRIES, ARTICLES, INDUSTRY_META, INDUSTRY_HUE, INDUSTRY_ICONS,
+} from '../../data/index';
+
+// ── getStaticPaths ────────────────────────────────────────────────────────────
+export function getStaticPaths() {
+  return INDUSTRIES.map((industry) => ({
+    params: { id: industry.id },
+    props:  { industry },
+  }));
+}
+
+const { industry } = Astro.props;
+
+// Industry positioning copy
+const meta = INDUSTRY_META[industry.id];
+
+// Hero gradient colour
+const hue = INDUSTRY_HUE[industry.id] ?? 250;
+const heroGradient = `linear-gradient(135deg, oklch(0.90 0.06 ${hue}), oklch(0.82 0.12 ${hue + 30}))`;
+
+// Articles for this industry — match on display name (article.industry === industry.name)
+const industryArticles = ARTICLES.filter((a) => a.industry === industry.name);
+
+// FAQ items — industry-specific placeholder
+const faqs = [
+  {
+    question: `What makes ${industry.name} marketing different from other verticals?`,
+    answer: meta?.desc ?? `${industry.name} has unique buyer behaviour, decision cycles, and channel performance characteristics that require tailored GTM strategies rather than generic playbooks.`,
+  },
+  {
+    question: `Which channels work best for ${industry.name} marketing?`,
+    answer: `The right channel mix depends on your ICP's buying journey. ${industry.name} businesses typically see the highest ROI from a combination of organic search, targeted paid, and content-driven nurture programs.`,
+  },
+  {
+    question: `How do I measure marketing ROI in ${industry.name}?`,
+    answer: `Start by aligning on which pipeline metrics matter most for your business model. ${industry.name} typically focuses on CAC, LTV, and payback period as the north-star metrics for marketing investment decisions.`,
+  },
+  {
+    question: `What budget should a ${industry.name} company allocate to marketing?`,
+    answer: `Industry benchmarks for ${industry.name} range from 8-15% of revenue for growth-stage companies and 5-10% for mature businesses. The right number depends on your growth targets and competitive position.`,
+  },
+];
+
+const canonicalUrl = `https://gtmremixed.com/industries/${industry.id}`;
+const icon = INDUSTRY_ICONS[industry.id] ?? '🏢';
+---
+
+<Layout
+  title={`${industry.name} Marketing — Industry Hub`}
+  description={meta?.tagline ?? `GTM strategies, guides, and frameworks for ${industry.name} marketing teams.`}
+  canonicalUrl={canonicalUrl}
+>
+  <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+  <section
+    class="niche-hero"
+    style={`background: ${heroGradient}`}
+    aria-labelledby="industry-hero-title"
+  >
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
+          <li class="breadcrumb-item breadcrumb-item--current" aria-current="page">
+            {industry.name}
+          </li>
+        </ol>
+      </nav>
+
+      <div class="niche-hero-content">
+        <div class="niche-hero-text">
+          <p class="niche-hero-animal">
+            <span aria-hidden="true">{icon}</span> {industry.name}
+          </p>
+          <h1 id="industry-hero-title" class="niche-hero-title">
+            {industry.name} Marketing
+          </h1>
+          {meta && (
+            <>
+              <p class="niche-hero-tagline">{meta.tagline}</p>
+              <p class="niche-hero-desc">{meta.desc}</p>
+            </>
+          )}
+          <div class="niche-hero-meta">
+            <span class="tag">{industry.count} articles</span>
+            <a href="/blog" class="btn btn-outline btn-sm">View all articles →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Articles ──────────────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="industry-articles-heading">
+    <div class="container">
+      <header class="section-header">
+        <h2 id="industry-articles-heading" class="section-title">
+          {industry.name} guides
+        </h2>
+        {industryArticles.length > 0 && (
+          <p class="section-subtitle">
+            {industryArticles.length} article{industryArticles.length !== 1 ? 's' : ''} tailored to the {industry.name} vertical.
+          </p>
+        )}
+      </header>
+
+      {industryArticles.length > 0 ? (
+        <div class="articles-grid articles-grid--3">
+          {industryArticles.map((article) => (
+            <ArticleCard article={article} />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>Industry-specific articles for {industry.name} are coming soon.</p>
+          <p>Browse our channel guides in the meantime — the frameworks apply across verticals.</p>
+          <a href="/blog" class="btn btn-outline btn-sm">Browse all articles →</a>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="industry-faq-heading">
+    <div class="container">
+      <header class="section-header">
+        <h2 id="industry-faq-heading" class="section-title">Frequently asked questions</h2>
+      </header>
+      <FAQAccordion client:visible items={faqs} />
+    </div>
+  </section>
+
+  <!-- ── Newsletter ────────────────────────────────────────────────────────── -->
+  <section class="page-section newsletter-section" aria-label="Newsletter">
+    <div class="container">
+      <NewsletterSignup client:idle />
+    </div>
+  </section>
+</Layout>

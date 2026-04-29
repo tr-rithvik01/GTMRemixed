@@ -1,0 +1,41 @@
+---
+/**
+ * ImgPlaceholder.astro — gradient placeholder shown before a real image loads.
+ *
+ * WHY .astro?
+ * Static CSS gradient with no interactivity. Renders as a <div> with inline
+ * style. Used as a stand-in during development (before real photography is added)
+ * and as a fallback for articles that don't have a hero image.
+ *
+ * PROPS:
+ *   aspect    {'video'|'square'|'portrait'} — controls aspect-ratio class
+ *   gradientA {string?} — start colour (CSS value, default: brand blue)
+ *   gradientB {string?} — end colour  (CSS value, default: brand purple)
+ *   alt       {string?} — alt text if used as a meaningful image (default: empty / decorative)
+ */
+
+interface Props {
+  aspect?: 'video' | 'square' | 'portrait';
+  gradientA?: string;
+  gradientB?: string;
+  alt?: string;
+}
+
+const {
+  aspect = 'video',
+  gradientA = 'oklch(0.85 0.08 250)',
+  gradientB = 'oklch(0.78 0.12 290)',
+  alt = '',
+} = Astro.props;
+---
+
+<div
+  class={`img-placeholder img-placeholder--${aspect}`}
+  style={`background: linear-gradient(135deg, ${gradientA}, ${gradientB})`}
+  role={alt ? 'img' : 'presentation'}
+  aria-label={alt || undefined}
+  aria-hidden={!alt ? 'true' : undefined}
+>
+  {/* Slot allows inserting an icon or text overlay */}
+  <slot />
+</div>

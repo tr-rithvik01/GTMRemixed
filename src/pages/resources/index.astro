@@ -1,0 +1,148 @@
+---
+/**
+ * src/pages/resources/index.astro — Resources page
+ *
+ * URL: /resources
+ *
+ * Shows all downloadable templates, checklists, guides, and tools.
+ * Also includes the GTM Gods podcast episode list.
+ *
+ * ENTIRELY STATIC — no React islands needed on this page.
+ * All content is pre-rendered from src/data/index.ts at build time.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import ResourceCard from '../../components/astro/ResourceCard.astro';
+import NewsletterSignup from '../../components/react/NewsletterSignup';
+import { RESOURCES, GTMGODS_EXPERTS } from '../../data/index';
+
+// Group resources by type for tabbed display
+const templates  = RESOURCES.filter((r) => r.type === 'Template');
+const checklists = RESOURCES.filter((r) => r.type === 'Checklist');
+const guides     = RESOURCES.filter((r) => r.type === 'Guide');
+const tools      = RESOURCES.filter((r) => r.type === 'Tool');
+---
+
+<Layout
+  title="Free Resources"
+  description="Download free GTM templates, checklists, guides, and tools used by 12,000+ B2B marketers. No email required."
+>
+  <!-- ── Page hero ──────────────────────────────────────────────────────── -->
+  <div class="page-hero">
+    <div class="container">
+      <h1 class="page-hero-title">Free Resources</h1>
+      <p class="page-hero-subtitle">
+        Templates, checklists, and tools that our team uses every day — open sourced
+        for the B2B marketing community.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── All resources ─────────────────────────────────────────────────── -->
+  <section class="page-section" id="tools" aria-labelledby="resources-main-heading">
+    <div class="container">
+      <h2 id="resources-main-heading" class="section-title">All free downloads</h2>
+
+      <div class="resources-grid resources-grid--3">
+        {RESOURCES.map((resource) => (
+          <ResourceCard resource={resource} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Segmented by type ──────────────────────────────────────────────── -->
+  {templates.length > 0 && (
+    <section class="page-section" id="templates" aria-labelledby="templates-heading">
+      <div class="container">
+        <header class="section-header">
+          <h2 id="templates-heading" class="section-title">Templates</h2>
+          <p class="section-subtitle">Plug-and-play spreadsheets and docs you can copy to your Drive.</p>
+        </header>
+        <div class="resources-grid resources-grid--3">
+          {templates.map((r) => <ResourceCard resource={r} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {checklists.length > 0 && (
+    <section class="page-section" id="checklists" aria-labelledby="checklists-heading">
+      <div class="container">
+        <header class="section-header">
+          <h2 id="checklists-heading" class="section-title">Checklists</h2>
+          <p class="section-subtitle">Step-by-step frameworks you can run before any major campaign launch.</p>
+        </header>
+        <div class="resources-grid resources-grid--3">
+          {checklists.map((r) => <ResourceCard resource={r} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {guides.length > 0 && (
+    <section class="page-section" id="guides" aria-labelledby="guides-heading">
+      <div class="container">
+        <header class="section-header">
+          <h2 id="guides-heading" class="section-title">Guides</h2>
+          <p class="section-subtitle">Long-form implementation guides with worked examples.</p>
+        </header>
+        <div class="resources-grid resources-grid--3">
+          {guides.map((r) => <ResourceCard resource={r} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ── GTM Gods Podcast ───────────────────────────────────────────────── -->
+  <section class="page-section" id="podcast" aria-labelledby="podcast-heading">
+    <div class="container">
+      <header class="section-header">
+        <h2 id="podcast-heading" class="section-title">GTM Gods Podcast</h2>
+        <p class="section-subtitle">
+          Interviews with the practitioners behind the highest-performing GTM programs
+          in the world. One tactical insight per episode.
+        </p>
+      </header>
+
+      <div class="podcast-grid">
+        {GTMGODS_EXPERTS.map((ep) => (
+          <article class="podcast-card">
+            <div
+              class="podcast-card-avatar"
+              style={`background: ${ep.bg}; color: ${ep.color}`}
+              aria-hidden="true"
+            >
+              {ep.initials}
+            </div>
+            <div class="podcast-card-body">
+              <div class="podcast-card-meta">
+                <span class="tag">{ep.ep}</span>
+                <span class="tag tag--niche">{ep.industry}</span>
+                <span class="podcast-duration">{ep.duration}</span>
+              </div>
+              <h3 class="podcast-card-title">{ep.episode}</h3>
+              <p class="podcast-card-guest">
+                {ep.name} · {ep.title}
+              </p>
+              <p class="podcast-card-gain">{ep.gain}</p>
+              <a
+                href={`/resources/podcast/${ep.id}`}
+                class="btn btn-outline btn-sm"
+              >
+                Listen now →
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Newsletter ─────────────────────────────────────────────────────── -->
+  <section class="page-section newsletter-section" aria-label="Newsletter">
+    <div class="container">
+      <NewsletterSignup client:idle />
+    </div>
+  </section>
+</Layout>

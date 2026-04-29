@@ -1,0 +1,80 @@
+---
+/**
+ * src/pages/blog/index.astro — Blog index page
+ *
+ * URL: /blog
+ *
+ * ARCHITECTURE:
+ * This page is a thin Astro shell that passes the full ARTICLES array to the
+ * BlogFilter React island. The island handles all filtering, sorting, and
+ * pagination client-side with zero network requests.
+ *
+ * WHY NOT SERVER-SIDE FILTERING?
+ * With output: 'static', Cloudflare Pages serves pre-built HTML. Server-side
+ * filtering would require either:
+ *   a) A separate API endpoint (adds complexity)
+ *   b) Pre-building every filter combination (combinatorial explosion)
+ * Client-side filtering in the React island is the right trade-off at this
+ * content scale (< 200 articles). All data is in the JS bundle, compiled at
+ * build time, so no hydration latency waiting for a fetch().
+ *
+ * SEO NOTE:
+ * The static HTML for this page includes the full article list server-rendered
+ * (via BlogFilter's initial render). Search engines see all articles without JS.
+ * The filtering happens *client-side* after hydration, which doesn't affect
+ * initial crawlability.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import BlogFilter from '../../components/react/BlogFilter';
+import { ARTICLES, NICHES, INDUSTRIES } from '../../data/index';
+
+// Schema.org CollectionPage markup for SEO / LLM crawlers.
+const schemaJson = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'GTM Remixed Blog',
+  description: 'In-depth guides on SEO, PPC, content marketing, analytics, and B2B go-to-market strategy.',
+  url: 'https://gtmremixed.com/blog',
+});
+---
+
+<Layout
+  title="Blog"
+  description="In-depth guides, frameworks, and analysis covering SEO, PPC, content marketing, analytics, email, CRO, social media, and local SEO."
+>
+  <!-- Schema.org markup for search engines -->
+  <script type="application/ld+json" set:html={schemaJson}></script>
+
+  <!-- Page header -->
+  <div class="page-hero page-hero--blog">
+    <div class="container">
+      <h1 class="page-hero-title">The GTM Remixed Blog</h1>
+      <p class="page-hero-subtitle">
+        In-depth guides and frameworks across every marketing channel —
+        written by practitioners, backed by data.
+      </p>
+    </div>
+  </div>
+
+  <!-- Blog filter + grid -->
+  <!--
+    WHY client:load?
+    The filter is the primary interactive element on this page. Users arrive
+    specifically to search/filter content, so deferring would cause a visible
+    unresponsive state on first interaction.
+
+    DATA FLOW:
+    - articles: full ARTICLES array — BlogFilter slices/filters it client-side
+    - niches: used to render channel filter chips
+    - industries: used to render industry sub-filter chips
+  -->
+  <div class="container blog-index-container">
+    <BlogFilter
+      client:load
+      articles={ARTICLES}
+      niches={NICHES}
+      industries={INDUSTRIES}
+    />
+  </div>
+</Layout>

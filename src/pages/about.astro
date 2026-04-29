@@ -1,0 +1,209 @@
+---
+/**
+ * src/pages/about.astro — About page
+ *
+ * URL: /about
+ *
+ * Fully static page — mission statement, team bios, timeline.
+ * No React islands needed: no interactive state.
+ *
+ * LESSON: Static pages like this are Astro's sweet spot. Zero JS shipped to
+ * the browser, fully crawlable HTML, and perfect Lighthouse scores.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import NewsletterSignup from '../components/react/NewsletterSignup';
+
+// Team members — would come from a CMS in production
+const team = [
+  {
+    initials: 'MC',
+    name: 'Maya Chen',
+    role: 'Head of SEO',
+    bio: '8 years auditing technical SEO for Fortune 500 companies. Previously at Moz and Conductor.',
+    bg: 'oklch(0.93 0.04 160)',
+    color: 'oklch(0.38 0.10 160)',
+  },
+  {
+    initials: 'JW',
+    name: 'Jordan Walsh',
+    role: 'PPC Strategist',
+    bio: 'Managed $50M+ in paid media across Google, Meta, and LinkedIn for B2B SaaS companies.',
+    bg: 'oklch(0.92 0.03 250)',
+    color: 'oklch(0.35 0.09 250)',
+  },
+  {
+    initials: 'SR',
+    name: 'Sam Rivera',
+    role: 'Content Strategist',
+    bio: 'Built content programs that drove 3× organic traffic for 12 B2B companies over 3 years.',
+    bg: 'oklch(0.94 0.02 30)',
+    color: 'oklch(0.38 0.08 30)',
+  },
+  {
+    initials: 'AP',
+    name: 'Alex Park',
+    role: 'Local SEO Lead',
+    bio: 'Specialises in multi-location local SEO. Audited 200+ franchise and enterprise local programs.',
+    bg: 'oklch(0.94 0.03 50)',
+    color: 'oklch(0.42 0.10 50)',
+  },
+  {
+    initials: 'PS',
+    name: 'Priya Sharma',
+    role: 'Email Marketing Lead',
+    bio: 'Email deliverability specialist. Recovered inbox placement for 40+ enterprise senders.',
+    bg: 'oklch(0.93 0.03 195)',
+    color: 'oklch(0.40 0.10 195)',
+  },
+  {
+    initials: 'ML',
+    name: 'Marcus Lee',
+    role: 'CRO Specialist',
+    bio: 'Ran 200+ A/B tests across SaaS, e-commerce, and lead-gen funnels with documented lift.',
+    bg: 'oklch(0.94 0.03 55)',
+    color: 'oklch(0.42 0.12 55)',
+  },
+];
+
+// Company timeline
+const timeline = [
+  {
+    year: '2021',
+    title: 'GTM Remixed founded',
+    desc: 'Started as a newsletter sharing frameworks from 50+ audits conducted during the Covid-era digital acceleration.',
+  },
+  {
+    year: '2022',
+    title: 'Crossed 5,000 subscribers',
+    desc: 'Expanded from newsletter to full editorial site covering all 8 marketing channels with in-depth guides.',
+  },
+  {
+    year: '2023',
+    title: 'GTM Gods Podcast launched',
+    desc: 'Weekly interviews with CMOs and growth leaders from the most efficient marketing programs in the world.',
+  },
+  {
+    year: '2024',
+    title: '10,000 subscribers milestone',
+    desc: 'Launched the free resource library — templates, checklists, and tools now downloaded 50,000+ times.',
+  },
+  {
+    year: '2025',
+    title: 'Industry vertical expansion',
+    desc: 'Added 8 industry-specific content tracks: SaaS, e-commerce, healthcare, fintech, logistics, and more.',
+  },
+  {
+    year: '2026',
+    title: 'Today',
+    desc: '12,000+ subscribers, 256+ guides, 47 podcast episodes. Still writing the frameworks we wish existed.',
+  },
+];
+---
+
+<Layout
+  title="About"
+  description="GTM Remixed is a practitioner-built resource for B2B marketers who measure everything. Learn about our team, mission, and story."
+>
+  <!-- ── Mission ─────────────────────────────────────────────────────────── -->
+  <section class="page-hero" aria-labelledby="about-heading">
+    <div class="container">
+      <h1 id="about-heading" class="page-hero-title">About GTM Remixed</h1>
+      <p class="page-hero-subtitle">
+        We're a team of practitioners who got tired of generic marketing content.
+        Every guide we publish is built from real campaigns, real data, and real results.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Mission statement ─────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="mission-heading">
+    <div class="container">
+      <div class="about-mission">
+        <h2 id="mission-heading" class="section-title">Our mission</h2>
+        <p class="about-mission-body">
+          Most marketing content is written by people who have never run a campaign.
+          GTM Remixed exists to fix that. Every framework, checklist, and guide is
+          built from hands-on experience — audited, tested, and updated when the data
+          changes.
+        </p>
+        <p class="about-mission-body">
+          We cover every major go-to-market channel — SEO, PPC, content, email, social,
+          local, analytics, and CRO — with the same depth and rigour. And we build
+          industry-specific tracks for the verticals where generic advice consistently fails.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Team ──────────────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="team-heading">
+    <div class="container">
+      <header class="section-header">
+        <h2 id="team-heading" class="section-title">The team</h2>
+        <p class="section-subtitle">
+          Practitioners, not journalists. Everyone on the team has run the campaigns
+          they write about.
+        </p>
+      </header>
+
+      <div class="team-grid">
+        {team.map((member) => (
+          <div class="team-card">
+            <div
+              class="team-avatar"
+              style={`background: ${member.bg}; color: ${member.color}`}
+              aria-hidden="true"
+            >
+              {member.initials}
+            </div>
+            <h3 class="team-name">{member.name}</h3>
+            <p class="team-role">{member.role}</p>
+            <p class="team-bio">{member.bio}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Timeline ──────────────────────────────────────────────────────── -->
+  <section class="page-section" aria-labelledby="timeline-heading">
+    <div class="container">
+      <h2 id="timeline-heading" class="section-title">Our story</h2>
+
+      <ol class="timeline" aria-label="GTM Remixed history">
+        {timeline.map((item) => (
+          <li class="timeline-item">
+            <div class="timeline-year" aria-label={`Year ${item.year}`}>
+              {item.year}
+            </div>
+            <div class="timeline-content">
+              <h3 class="timeline-title">{item.title}</h3>
+              <p class="timeline-desc">{item.desc}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ── CTA ───────────────────────────────────────────────────────────── -->
+  <section class="page-section" aria-label="Call to action">
+    <div class="container">
+      <div class="about-cta">
+        <h2 class="about-cta-title">Want to work together?</h2>
+        <p class="about-cta-body">
+          We offer GTM audits, fractional consulting, and custom research for B2B teams.
+        </p>
+        <a href="/contact" class="btn btn-primary">Get in touch →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Newsletter ─────────────────────────────────────────────────────── -->
+  <section class="page-section newsletter-section" aria-label="Newsletter">
+    <div class="container">
+      <NewsletterSignup client:idle />
+    </div>
+  </section>
+</Layout>

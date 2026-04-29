@@ -1,0 +1,303 @@
+---
+/**
+ * src/pages/blog/[slug].astro — Individual article page
+ *
+ * URL pattern: /blog/:slug
+ * Examples:
+ *   /blog/technical-seo-checklist-2026
+ *   /blog/google-ads-quality-score-framework
+ *
+ * STATIC GENERATION:
+ * getStaticPaths() runs at BUILD TIME in Node.js. It returns one entry per
+ * article, which Astro uses to pre-render one HTML file per slug. The resulting
+ * files are uploaded to Cloudflare Pages as static assets.
+ *
+ * WHY getStaticPaths() instead of a dynamic SSR route?
+ * output: 'static' means every route must be known at build time. There's no
+ * server runtime on Cloudflare Pages for a static deployment. getStaticPaths()
+ * is Astro's mechanism for "enumerate all possible values of [slug]".
+ *
+ * REACT ISLANDS ON THIS PAGE:
+ *   - ReadingProgress (client:load)  — scroll-based progress bar at top
+ *   - TableOfContents (client:load)  — sticky ToC with active heading tracking
+ *   - ShareBar (client:idle)         — copy link + social share buttons
+ *   - NewsletterSignup (client:idle) — email capture between article content
+ *   - CodeBlock (client:visible)     — copy-to-clipboard for code snippets
+ *
+ * NOTE: Article BODY CONTENT is placeholder prose. Replace with real MDX or
+ * a CMS integration (Contentful, Sanity, etc.) when ready.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import ReadingProgress from '../../components/react/ReadingProgress';
+import TableOfContents from '../../components/react/TableOfContents';
+import ShareBar from '../../components/react/ShareBar';
+import NewsletterSignup from '../../components/react/NewsletterSignup';
+import TagBadge from '../../components/astro/TagBadge.astro';
+import CalloutBox from '../../components/astro/CalloutBox.astro';
+
+import { ARTICLES } from '../../data/index';
+
+// ── getStaticPaths ────────────────────────────────────────────────────────────
+// LESSON: This function MUST be exported from any file-based dynamic route
+// when output: 'static'. It runs in Node.js at build time, not in the browser.
+// Return an array of { params, props } objects — one per page to pre-render.
+export function getStaticPaths() {
+  return ARTICLES.map((article) => ({
+    params: { slug: article.slug },
+    props:  { article },
+  }));
+}
+
+// ── Page props ────────────────────────────────────────────────────────────────
+// Astro injects the props from the matching getStaticPaths() entry.
+const { article } = Astro.props;
+
+// Construct canonical URL — important for SEO when articles are shared.
+const canonicalUrl = `https://gtmremixed.com/blog/${article.slug}`;
+
+// ── Table of Contents data ─────────────────────────────────────────────────────
+// In a real MDX setup, extract headings from the compiled MDX output.
+// For now, provide a static placeholder ToC matching the article stub below.
+const headings = [
+  { id: 'introduction',  text: 'Introduction',         depth: 2 },
+  { id: 'methodology',   text: 'Methodology',          depth: 2 },
+  { id: 'key-findings',  text: 'Key Findings',         depth: 2 },
+  { id: 'section-one',   text: 'Section 1',            depth: 3 },
+  { id: 'section-two',   text: 'Section 2',            depth: 3 },
+  { id: 'implementation',text: 'Implementation Guide', depth: 2 },
+  { id: 'conclusion',    text: 'Conclusion',           depth: 2 },
+];
+
+// ── Schema.org Article markup ──────────────────────────────────────────────────
+const schemaJson = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.title,
+  description: article.excerpt,
+  author: {
+    '@type': 'Person',
+    name: article.author.name,
+    jobTitle: article.author.role,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'GTM Remixed',
+    url: 'https://gtmremixed.com',
+  },
+  datePublished: article.date,
+  dateModified: article.updated ?? article.date,
+  url: canonicalUrl,
+});
+---
+
+<Layout
+  title={article.title}
+  description={article.excerpt}
+  canonicalUrl={canonicalUrl}
+>
+  <!-- Schema.org markup -->
+  <script type="application/ld+json" set:html={schemaJson}></script>
+
+  <!--
+    ReadingProgress drives the fixed progress bar in Layout.astro.
+    Must be client:load — scroll events start immediately on page load.
+  -->
+  <ReadingProgress client:load />
+
+  <div class="article-layout container">
+
+    <!-- ── Sidebar — Table of Contents ─────────────────────────────────── -->
+    <aside class="article-toc-aside" aria-label="Table of contents">
+      <!--
+        TableOfContents uses IntersectionObserver to highlight the active
+        heading. client:load ensures tracking starts from the first scroll.
+      -->
+      <TableOfContents client:load headings={headings} />
+    </aside>
+
+    <!-- ── Main article content ─────────────────────────────────────────── -->
+    <article class="article-content" itemscope itemtype="https://schema.org/Article">
+      <!-- ── Breadcrumb ──────────────────────────────────────────────── -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item">
+            <a href="/" class="breadcrumb-link">Home</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="/blog" class="breadcrumb-link">Blog</a>
+          </li>
+          {article.niche && (
+            <li class="breadcrumb-item">
+              <a
+                href={`/niches/${article.niche.toLowerCase().replace(/\s+/g, '-')}`}
+                class="breadcrumb-link"
+              >
+                {article.niche}
+              </a>
+            </li>
+          )}
+          <li class="breadcrumb-item breadcrumb-item--current" aria-current="page">
+            {article.title}
+          </li>
+        </ol>
+      </nav>
+
+      <!-- ── Article header ─────────────────────────────────────────── -->
+      <header class="article-header">
+        <!-- Tags -->
+        <div class="article-header-tags">
+          {article.niche && (
+            <TagBadge
+              label={article.niche}
+              variant="niche"
+              href={`/niches/${article.niche.toLowerCase().replace(/\s+/g, '-')}`}
+            />
+          )}
+          {article.tags.slice(0, 3).map((tag) => (
+            <TagBadge label={`#${tag}`} variant="default" />
+          ))}
+        </div>
+
+        <h1 class="article-title" itemprop="headline">{article.title}</h1>
+
+        <p class="article-excerpt" itemprop="description">{article.excerpt}</p>
+
+        <!-- Author + meta row -->
+        <div class="article-meta-row">
+          <div class="author-bio-sm">
+            <div class="author-avatar" aria-hidden="true">
+              {article.author.initials}
+            </div>
+            <div class="author-bio-text">
+              <span class="author-name" itemprop="author">{article.author.name}</span>
+              <span class="author-role">{article.author.role}</span>
+            </div>
+          </div>
+
+          <div class="article-meta-details">
+            <span class="article-date">
+              Published <time itemprop="datePublished">{article.date}</time>
+            </span>
+            {article.updated && (
+              <span class="article-updated">
+                Updated <time itemprop="dateModified">{article.updated}</time>
+              </span>
+            )}
+            <span class="article-read-time">{article.readTime} read</span>
+          </div>
+        </div>
+
+        <!-- Share bar — client:idle because it's below the fold initially -->
+        <ShareBar client:idle url={canonicalUrl} title={article.title} />
+      </header>
+
+      <!-- ── Article body (placeholder) ─────────────────────────────── -->
+      <!--
+        LESSON: Article body placeholder
+        In a production CMS-driven setup, this content would come from MDX,
+        Contentful, or similar. For the prototype, we render structured
+        placeholder content that demonstrates all the component types.
+
+        Replace this entire section with:
+          import { Content } from '../../../content/blog/${article.slug}.mdx';
+          <Content />
+        ...once you integrate a content source.
+      -->
+      <div class="article-body" itemprop="articleBody">
+        <h2 id="introduction">Introduction</h2>
+        <p>
+          {article.excerpt} This article dives deep into the data, frameworks,
+          and implementation steps that will help you replicate these results
+          in your own programs.
+        </p>
+
+        <CalloutBox variant="tip" title="Before you start">
+          Make sure you have access to your analytics platform and any relevant
+          ad or SEO dashboards. You'll want to verify results as you implement
+          each section.
+        </CalloutBox>
+
+        <h2 id="methodology">Methodology</h2>
+        <p>
+          Our analysis covered 400+ campaigns across the {article.niche} channel,
+          spanning the {article.industry} industry over an 18-month period.
+          All metrics were validated against third-party data sources to control
+          for seasonality and industry trends.
+        </p>
+
+        <h2 id="key-findings">Key Findings</h2>
+
+        <h3 id="section-one">Section 1</h3>
+        <p>
+          The first finding challenges conventional wisdom in {article.niche}:
+          [placeholder content — connect your CMS here].
+        </p>
+
+        <h3 id="section-two">Section 2</h3>
+        <p>
+          The second finding has significant implications for budget allocation
+          and channel prioritisation: [placeholder content].
+        </p>
+
+        <!-- Newsletter insert — mid-article -->
+        <div class="article-newsletter-insert">
+          <NewsletterSignup client:idle />
+        </div>
+
+        <h2 id="implementation">Implementation Guide</h2>
+        <p>
+          Here's how to apply these findings to your own {article.niche} program:
+        </p>
+
+        <ol>
+          <li>Start by auditing your current baseline metrics.</li>
+          <li>Identify which of the 6 winning patterns applies to your situation.</li>
+          <li>Implement one change at a time and measure for 14 days before the next.</li>
+        </ol>
+
+        <CalloutBox variant="warning" title="Common mistake">
+          Implementing multiple changes simultaneously makes it impossible to
+          attribute results. Always change one variable at a time.
+        </CalloutBox>
+
+        <h2 id="conclusion">Conclusion</h2>
+        <p>
+          The data from {article.readTime} of research points to a clear pattern:
+          [placeholder conclusion]. Apply this framework to your own program
+          and measure the results after 30 days.
+        </p>
+      </div>
+
+      <!-- ── Article footer ─────────────────────────────────────────── -->
+      <footer class="article-footer">
+        <!-- Tags -->
+        <div class="article-footer-tags">
+          <span class="article-footer-tags-label">Filed under:</span>
+          {article.tags.map((tag) => (
+            <TagBadge label={`#${tag}`} variant="default" />
+          ))}
+        </div>
+
+        <!-- Bottom share bar -->
+        <ShareBar client:idle url={canonicalUrl} title={article.title} />
+
+        <!-- Author bio -->
+        <div class="author-bio-full">
+          <div class="author-avatar author-avatar--lg" aria-hidden="true">
+            {article.author.initials}
+          </div>
+          <div class="author-bio-content">
+            <h3 class="author-bio-name">{article.author.name}</h3>
+            <p class="author-bio-role">{article.author.role}, GTM Remixed</p>
+            <p class="author-bio-blurb">
+              {article.author.name} leads {article.niche} strategy at GTM Remixed,
+              with 8+ years of hands-on experience running campaigns across
+              enterprise and growth-stage B2B companies.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </article>
+  </div>
+</Layout>

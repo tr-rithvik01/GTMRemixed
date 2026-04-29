@@ -1,0 +1,105 @@
+---
+/**
+ * src/pages/contact.astro — Contact page
+ *
+ * URL: /contact
+ *
+ * Static layout with a single React island: ContactForm.
+ * The form has client-side validation, loading state, and success/error feedback.
+ *
+ * WHY client:load?
+ * Contact is an intent page — users come here specifically to submit the form.
+ * Deferring hydration would cause a frustrating interaction delay.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import ContactForm from '../components/react/ContactForm';
+
+const contactMethods = [
+  {
+    icon: '✉️',
+    label: 'Email',
+    value: 'hello@gtmremixed.com',
+    href: 'mailto:hello@gtmremixed.com',
+  },
+  {
+    icon: '🐦',
+    label: 'Twitter / X',
+    value: '@gtmremixed',
+    href: 'https://twitter.com/gtmremixed',
+  },
+  {
+    icon: '💼',
+    label: 'LinkedIn',
+    value: 'linkedin.com/company/gtmremixed',
+    href: 'https://linkedin.com/company/gtmremixed',
+  },
+];
+---
+
+<Layout
+  title="Contact"
+  description="Get in touch with the GTM Remixed team. We offer audits, fractional consulting, and custom research for B2B marketing teams."
+>
+  <!-- ── Page header ────────────────────────────────────────────────────── -->
+  <section class="page-hero page-hero--contact" aria-labelledby="contact-heading">
+    <div class="container">
+      <h1 id="contact-heading" class="page-hero-title">Get in touch</h1>
+      <p class="page-hero-subtitle">
+        Questions about GTM strategy, audit inquiries, or just want to say hello —
+        we read every message and respond within 1 business day.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Contact layout ────────────────────────────────────────────────── -->
+  <section class="page-section contact-section" aria-label="Contact form and details">
+    <div class="container">
+      <div class="contact-layout">
+
+        <!-- Left: contact methods -->
+        <aside class="contact-info">
+          <h2 class="contact-info-title">Other ways to reach us</h2>
+
+          <ul class="contact-methods">
+            {contactMethods.map((method) => (
+              <li class="contact-method">
+                <span class="contact-method-icon" aria-hidden="true">{method.icon}</span>
+                <div class="contact-method-body">
+                  <span class="contact-method-label">{method.label}</span>
+                  <a
+                    href={method.href}
+                    class="contact-method-value link"
+                    target={method.href.startsWith('http') ? '_blank' : undefined}
+                    rel={method.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  >
+                    {method.value}
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div class="contact-info-note">
+            <h3 class="contact-info-note-title">Working with us</h3>
+            <p>
+              We offer GTM audits, fractional CMO engagements, and custom
+              research projects for B2B companies. Response time: 1 business day.
+            </p>
+          </div>
+        </aside>
+
+        <!-- Right: contact form (React island) -->
+        <div class="contact-form-wrap">
+          <h2 class="contact-form-title">Send a message</h2>
+          <!--
+            ContactForm is a React island — it needs client:load because the form
+            is the primary conversion action on this page. Users arrive here to
+            submit; deferring hydration would block that interaction.
+          -->
+          <ContactForm client:load />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

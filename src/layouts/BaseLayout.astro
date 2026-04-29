@@ -1,0 +1,105 @@
+---
+/**
+ * BaseLayout.astro
+ *
+ * LESSON: Every Astro file has two sections:
+ *   1. The "frontmatter" (between ---) — runs on the SERVER at build time. TypeScript/JS lives here.
+ *   2. The template (below) — the HTML that gets rendered.
+ *
+ * This layout wraps every page. Pass props to customise the <head> per-page.
+ */
+
+interface Props {
+  title: string;
+  description: string;
+  // Canonical URL helps search engines avoid duplicate content
+  canonicalUrl?: string;
+  // Open Graph image for social sharing previews
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  canonicalUrl = Astro.url.href,   // default to current page URL
+  ogImage = '/og-default.png',
+} = Astro.props;
+
+const siteName = 'GTM Remixed';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Primary SEO tags -->
+    <title>{title} | {siteName}</title>
+    <meta name="description" content={description} />
+
+    <!--
+      LESSON: Canonical URL
+      Tells Google "this is the authoritative URL for this content."
+      Prevents duplicate-content penalties when the same page is reachable
+      from multiple URLs (e.g. with/without trailing slash, query params).
+    -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!--
+      LESSON: Open Graph tags (Facebook, LinkedIn, Slack previews)
+      LLM crawlers also read these when summarising your page.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content={siteName} />
+
+    <!-- Twitter / X card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!--
+      LESSON: robots meta tag
+      'index, follow' = let search engines index this page and follow links.
+      On private/thin pages you'd use 'noindex, nofollow'.
+    -->
+    <meta name="robots" content="index, follow" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- Sitemap autodiscovery — helps crawlers find your sitemap.xml -->
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Astro injects the generator tag automatically -->
+    <meta name="generator" content={Astro.generator} />
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+      </nav>
+    </header>
+
+    <main>
+      <!--
+        LESSON: <slot />
+        This is where each page's content is injected.
+        Think of it like {children} in React.
+      -->
+      <slot />
+    </main>
+
+    <footer>
+      <p>&copy; {new Date().getFullYear()} {siteName}</p>
+    </footer>
+  </body>
+</html>

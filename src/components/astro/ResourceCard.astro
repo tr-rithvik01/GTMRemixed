@@ -1,0 +1,57 @@
+---
+/**
+ * ResourceCard.astro — card for tools, templates, and checklists in the resources page.
+ *
+ * WHY .astro?
+ * Purely static — renders a download/external link card. No state needed.
+ *
+ * PROPS:
+ *   resource {Resource} — from src/data/index.ts
+ *     Resource shape: { id, title, type: 'Template'|'Checklist'|'Guide'|'Tool', desc, teal }
+ *     No href on the data model — we derive the download path from id.
+ */
+
+import type { Resource } from '../../data/index';
+
+interface Props {
+  resource: Resource;
+}
+
+const { resource } = Astro.props;
+
+// Resources live at /downloads/ by convention; swap for your actual CDN paths.
+const downloadHref = `/downloads/${resource.id}`;
+
+const typeEmoji: Record<string, string> = {
+  Template:  '📋',
+  Checklist: '✅',
+  Guide:     '📖',
+  Tool:      '🔧',
+};
+
+const ctaLabel: Record<string, string> = {
+  Template:  'Download free',
+  Checklist: 'Download free',
+  Guide:     'Read guide',
+  Tool:      'Open tool',
+};
+---
+
+<article class={`resource-card${resource.teal ? ' resource-card--teal' : ''}`}>
+  <!-- Resource type badge + icon area -->
+  <div class="resource-card-header">
+    <div class="resource-card-icon" aria-hidden="true">
+      {typeEmoji[resource.type] ?? '📄'}
+    </div>
+    <span class="tag tag--type">{resource.type}</span>
+  </div>
+
+  <!-- Content -->
+  <h3 class="resource-card-title">{resource.title}</h3>
+  <p class="resource-card-desc">{resource.desc}</p>
+
+  <!-- CTA -->
+  <a href={downloadHref} class="btn btn-outline btn-sm resource-card-cta">
+    {ctaLabel[resource.type] ?? 'Get free'}
+  </a>
+</article>

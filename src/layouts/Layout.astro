@@ -1,0 +1,244 @@
+---
+/**
+ * Layout.astro — the main shell for every page on GTM Remixed.
+ *
+ * WHY THIS FILE EXISTS:
+ * BaseLayout.astro (the Astro starter default) is a thin wrapper. We replace it
+ * with this richer layout that adds:
+ *   - Full design-system CSS (global.css with oklch() tokens + dark mode)
+ *   - Google Fonts loaded with preconnect for performance
+ *   - Theme-FOUC prevention: an inline script runs *before* any React hydrates,
+ *     reading localStorage and setting data-theme on <html> immediately
+ *   - NavBar React island (mega-menus, search, theme toggle) with client:load
+ *   - Footer Astro component (purely static, no JS needed)
+ *   - Reading-progress bar (positioned via CSS, filled by ReadingProgress island)
+ *   - Skip-to-content link for keyboard / screen-reader accessibility
+ *
+ * USAGE:
+ *   import Layout from '../layouts/Layout.astro';
+ *   <Layout title="Page Title" description="Page description">
+ *     ...page content...
+ *   </Layout>
+ */
+
+// ── Astro component imports ──────────────────────────────────────────────────
+import Footer from '../components/astro/Footer.astro';
+
+// ── React island imports (hydrated client-side) ──────────────────────────────
+// WHY NavBar is a React island and not .astro:
+// The navbar has multiple interactive states — mega-menu open/close,
+// search overlay, scroll-shadow, and theme toggle — which all require useState
+// / useEffect and cannot be expressed in pure Astro without JS workarounds.
+import NavBar from '../components/react/NavBar';
+
+// ── Global CSS ───────────────────────────────────────────────────────────────
+// Astro bundles and fingerprints this at build time; Cloudflare Pages serves it
+// from its edge CDN. The import is processed by Vite, so PostCSS transforms,
+// autoprefixer, etc. apply automatically.
+import '../styles/global.css';
+
+// ── Props interface ───────────────────────────────────────────────────────────
+interface Props {
+  /** <title> tag — also used for OG title and Twitter card title. */
+  title: string;
+  /** Meta description — 140-160 chars is ideal for search snippets. */
+  description: string;
+  /**
+   * Canonical URL — default is the current page URL.
+   * Override when the same content is reachable at multiple paths.
+   */
+  canonicalUrl?: string;
+  /**
+   * Open Graph image — 1200×630 px recommended.
+   * LLM crawlers (GPTBot, ClaudeBot) also read this for page summaries.
+   */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  canonicalUrl = Astro.url.href,
+  ogImage = '/og-default.png',
+} = Astro.props;
+
+const siteName = 'GTM Remixed';
+
+// Pass current pathname to NavBar so it can highlight the active link.
+// Astro.url is a standard URL object available at build/SSR time.
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<!--
+  LESSON: data-theme attribute
+  We set it here as a default. The inline <script> block below may immediately
+  override it with the user's saved preference before the browser paints,
+  preventing any flash of the wrong theme (FOUC).
+-->
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- ── Google Fonts ──────────────────────────────────────────────────── -->
+    <!--
+      LESSON: preconnect hints
+      These open TCP+TLS connections to Google's font CDN early, before the
+      browser parses the <link rel="stylesheet"> below. Reduces font FOUT by
+      ~200–400 ms on first load.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Plus Jakarta Sans — used for all UI text (nav, body, labels, etc.)
+      Lora         — used for long-form article body text (serif, better reading)
+      display=swap — renders fallback font immediately; swaps when font loads
+    -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ── Primary SEO tags ──────────────────────────────────────────────── -->
+    <title>{title} | {siteName}</title>
+    <meta name="description" content={description} />
+
+    <!--
+      LESSON: Canonical URL
+      Tells Google which URL is authoritative when the same content is reachable
+      from multiple paths (e.g., with/without trailing slash, utm_ params).
+      Without this, duplicate-content penalties can tank rankings.
+    -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- ── Open Graph (Facebook, LinkedIn, Slack, LLM crawlers) ─────────── -->
+    <!--
+      LESSON: Open Graph
+      OG tags control how your pages appear when shared on social platforms and
+      in AI-generated summaries. LLMs like GPTBot and ClaudeBot read og:title,
+      og:description, and og:image to understand page content.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={`${title} | ${siteName}`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content={siteName} />
+
+    <!-- ── Twitter / X card ─────────────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} | ${siteName}`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- ── Robots ────────────────────────────────────────────────────────── -->
+    <!--
+      LESSON: robots meta tag
+      'index, follow' = let Google index this page and follow its links.
+      On thin/private pages use 'noindex, nofollow'.
+    -->
+    <meta name="robots" content="index, follow" />
+
+    <!-- ── Favicons ──────────────────────────────────────────────────────── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- ── Sitemap autodiscovery ─────────────────────────────────────────── -->
+    <!-- Helps crawlers find your sitemap without relying on robots.txt alone. -->
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- ── Astro generator meta ──────────────────────────────────────────── -->
+    <meta name="generator" content={Astro.generator} />
+
+    <!--
+      LESSON: Theme FOUC prevention (Flash of Unstyled Content)
+
+      WHY THIS MUST BE AN INLINE SCRIPT:
+      If we set the theme in a React component, it would run *after* hydration —
+      which happens after first paint. The user would briefly see the wrong
+      theme (usually light) before React flips it to dark. This inline script
+      runs synchronously as the browser parses the <head>, before any CSS is
+      applied, eliminating the flash entirely.
+
+      HOW IT WORKS:
+      1. Read the saved preference from localStorage (key: 'gs-theme').
+      2. Detect OS preference via matchMedia if no saved preference exists.
+      3. Set data-theme on <html> immediately.
+      4. global.css reads [data-theme="dark"] to apply the dark-mode tokens.
+
+      NOTE: `is:inline` tells Astro NOT to process or bundle this script —
+      it is emitted verbatim into the HTML so it runs synchronously.
+    -->
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('gs-theme');
+          if (saved === 'dark' || saved === 'light') {
+            document.documentElement.setAttribute('data-theme', saved);
+          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (_) {
+          // localStorage may be blocked in private browsing or by browser policy.
+          // Silently fall back to the default 'light' theme set on <html>.
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <!--
+      LESSON: Skip link (accessibility)
+      Screen readers and keyboard users tab through all interactive elements.
+      A skip link lets them jump straight to main content without tabbing through
+      every nav item. The :focus style in global.css makes it visible on focus.
+    -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!--
+      LESSON: Reading progress indicator
+      This <div> is positioned fixed at the top of the viewport (see global.css).
+      The ReadingProgress React island (used on article pages) updates its width
+      via CSS custom property --progress as the user scrolls. We render the div
+      here so it's always present in the DOM, even on pages that don't use the island.
+    -->
+    <div id="reading-progress" aria-hidden="true"></div>
+
+    <!--
+      NavBar is a React island hydrated immediately on load (client:load).
+
+      WHY client:load (not client:idle or client:visible)?
+      The navbar contains the theme toggle — which must update data-theme on <html>
+      *as soon as the user can interact*, not lazily. It also houses the search
+      overlay and mega-menus, which users expect to respond instantly.
+
+      currentPath is passed from Astro.url.pathname so the NavBar can apply
+      active styles to the correct link without any client-side location detection.
+    -->
+    <NavBar client:load currentPath={currentPath} />
+
+    <!--
+      LESSON: id="main-content"
+      Paired with the skip link above. Screen readers announce "main content"
+      when focus lands here, orienting the user within the page.
+    -->
+    <main id="main-content">
+      <!--
+        LESSON: <slot />
+        This is where each page's content is injected — equivalent to {children}
+        in React. Each page file (src/pages/*.astro) wraps its content in
+        <Layout> and the content replaces this slot at build time.
+      -->
+      <slot />
+    </main>
+
+    <!--
+      Footer is a plain Astro component — fully static HTML, zero client JS.
+      WHY NOT React? The footer has no interactive state. Keeping it as .astro
+      means no hydration cost, no JS bundle for the footer, and full SSG output.
+    -->
+    <Footer />
+  </body>
+</html>

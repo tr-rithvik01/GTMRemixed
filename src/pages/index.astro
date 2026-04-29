@@ -1,0 +1,300 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NewsletterSignup from '../components/react/NewsletterSignup';
+import HeroCanvas from '../components/react/HeroCanvas';
+import HeroGames from '../components/react/HeroGames';
+import HeroEmailForm from '../components/react/HeroEmailForm';
+import ArticleCard from '../components/astro/ArticleCard.astro';
+import ArticleCardFeatured from '../components/astro/ArticleCardFeatured.astro';
+import ResourceCard from '../components/astro/ResourceCard.astro';
+
+import {
+  NICHES, INDUSTRIES, ARTICLES, RESOURCES,
+  CHANNEL_TAGLINES, IND_META, INDUSTRY_ICONS,
+} from '../data/index';
+
+const featuredArticle = ARTICLES.find((a) => a.featured) ?? ARTICLES[0];
+const recentArticles  = ARTICLES.filter((a) => a.slug !== featuredArticle.slug).slice(0, 6);
+const highlightResources = RESOURCES.slice(0, 3);
+
+const stats = [
+  { value: '400+',    label: 'In-depth guides published' },
+  { value: '14,200+', label: 'Marketers read us weekly' },
+  { value: '8',       label: 'Growth channels covered' },
+  { value: '200+',    label: 'Site audits behind our advice' },
+];
+
+const proofNames = [
+  'Search Engine Journal', 'Marketing Land', 'HubSpot Blog',
+  'Moz', 'Search Engine Roundtable', 'Content Marketing Institute',
+];
+
+// Asymmetric 4-column channel grid layout from reference
+// Row 1: SEO(2) PPC(1) Social(1)
+// Row 2: Local(1) Analytics(1) Content(2)
+// Row 3: Email(2) CRO(2)
+const channelLayout: Array<{ niche: typeof NICHES[0]; colSpan: 1 | 2 }> = [
+  { niche: NICHES[0], colSpan: 2 }, // SEO
+  { niche: NICHES[1], colSpan: 1 }, // PPC
+  { niche: NICHES[2], colSpan: 1 }, // Social
+  { niche: NICHES[3], colSpan: 1 }, // Local
+  { niche: NICHES[4], colSpan: 1 }, // Analytics
+  { niche: NICHES[5], colSpan: 2 }, // Content
+  { niche: NICHES[6], colSpan: 2 }, // Email
+  { niche: NICHES[7], colSpan: 2 }, // CRO
+];
+
+const indStatItems: Array<[string, string]> = [
+  ['8', 'Industries'], ['200+', 'Vertical guides'], ['12', 'Practitioners'],
+];
+---
+
+<Layout
+  title="Modern GTM Strategies for B2B Teams"
+  description="GTM Remixed — in-depth guides, frameworks, and tools for SEO, PPC, content marketing, analytics, and more. Built for B2B growth teams."
+>
+
+  <!-- ── HERO (dark, two-column) ─────────────────────────────────────────── -->
+  <section class="hero hero-dark" aria-labelledby="hero-headline" style="border-bottom: 1px solid oklch(0.22 0.05 258);">
+    <div class="container">
+      <div class="hero-split-grid">
+
+        <!-- Left: text + email box -->
+        <div class="hero-split-left">
+          <div class="hero-eyebrow">Growth Marketing Intelligence</div>
+          <h1 id="hero-headline" class="hero-title">
+            Marketing intelligence<br />
+            for people who <em>measure everything.</em>
+          </h1>
+          <p class="hero-sub">
+            Actionable guides, frameworks, and data across 8 growth channels and
+            8 industries. Written by practitioners. Validated by results.
+          </p>
+          <div class="hero-actions">
+            <a href="/blog" class="btn btn-primary btn-lg">
+              Explore all guides
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                <path d="M3 7.5h9M8 3.5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a href="/resources" class="btn btn-secondary btn-lg">Free resources</a>
+          </div>
+
+          <!-- Weekly newsletter subscribe box -->
+          <div class="hero-email-box">
+            <div class="hero-email-box-label">Weekly GTM Intelligence</div>
+            <p style="font-size: 14px; color: oklch(0.68 0.04 258); line-height: 1.5; margin-bottom: 14px;">
+              Join <strong style="color: oklch(0.85 0.04 90);">14,200+ marketers</strong> who get actionable
+              channel insights, data breakdowns, and practitioner playbooks every Tuesday. No fluff.
+            </p>
+            <HeroEmailForm client:load />
+          </div>
+        </div>
+
+        <!-- Right: animated canvas -->
+        <div class="hero-split-right" style="position: relative;">
+          <HeroGames client:load /> {/* Replaced HeroCanvas with HeroGames */}
+        </div>
+
+      </div>
+
+      <!-- Stats strip -->
+      <div class="hero-stats" style="border-top-color: oklch(0.24 0.05 258);">
+        {stats.map((s) => (
+          <div class="hero-stat">
+            <div class="hero-stat-val">{s.value}</div>
+            <div class="hero-stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROOF STRIP ─────────────────────────────────────────────────────── -->
+  <div class="proof-strip-bar">
+    <div class="proof-strip-inner">
+      <span class="proof-strip-label">Referenced by</span>
+      <div class="proof-strip-names">
+        {proofNames.map((name) => (
+          <span class="proof-strip-name">{name}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHANNELS (asymmetric grid) ─────────────────────────────────────── -->
+  <section class="page-section niches-section" style="background: var(--bg); border-bottom: 1px solid var(--border);" aria-labelledby="niches-heading">
+    <div class="container">
+
+      <!-- Section header: two-col flex with button -->
+      <div class="niches-section-header">
+        <div style="max-width: 520px;">
+          <div class="section-eyebrow-badge">Browse by Channel</div>
+          <h2 id="niches-heading" class="niches-section-title">
+            Every growth channel,<br /><em>covered in depth.</em>
+          </h2>
+          <p style="font-size: 16px; color: var(--text-2); line-height: 1.6; margin: 0;">
+            8 channels. 250+ guides. Written by practitioners who've done the work.
+          </p>
+        </div>
+        <a href="/blog" class="btn btn-secondary" style="flex-shrink: 0;">
+          View all guides
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Asymmetric 4-column grid -->
+      <div class="channel-grid--home">
+        {channelLayout.map(({ niche, colSpan }) => {
+          const isFeatured = colSpan === 2;
+          return (
+            <a
+              href={`/niches/${niche.id}`}
+              class="channel-tile"
+              style={`--card-color: ${niche.color}; --card-bg: ${niche.bg}; grid-column: span ${colSpan};`}
+            >
+              <!-- Illustration area -->
+              <div class={`channel-tile-img ${isFeatured ? 'channel-tile-img--lg' : ''}`}
+                style={`background: ${niche.bg};`}>
+                <span class="channel-tile-abbr-bg" style={`color: ${niche.color};`}>{niche.abbr}</span>
+              </div>
+
+              <!-- Info footer -->
+              <div class={`channel-tile-footer ${isFeatured ? 'channel-tile-footer--lg' : ''}`}
+                style={`background: ${niche.bg};`}>
+                <div class="channel-tile-row">
+                  <div>
+                    <div class="channel-tile-name-row">
+                      <div class="channel-tile-badge" style={`background: ${niche.color}; width: ${isFeatured ? 22 : 18}px; height: ${isFeatured ? 22 : 18}px;`}>
+                        <span style={`font-size: ${isFeatured ? '8' : '7'}px; font-weight: 800; color: white; letter-spacing: 0.02em;`}>{niche.abbr}</span>
+                      </div>
+                      <span class={`channel-tile-name ${isFeatured ? 'channel-tile-name--lg' : ''}`}>{niche.name}</span>
+                    </div>
+                    <p class={`channel-tile-tagline ${isFeatured ? 'channel-tile-tagline--lg' : ''}`}>
+                      {CHANNEL_TAGLINES[niche.id]}
+                    </p>
+                  </div>
+                  <span class="channel-tile-count">{niche.count}</span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── INDUSTRIES (editorial left + grid right) ────────────────────────── -->
+  <section class="page-section industries-section" style="background: var(--bg-2); border-bottom: 1px solid var(--border);" aria-labelledby="industries-heading">
+    <div class="container">
+      <div class="industries-editorial-layout">
+
+        <!-- Left: editorial column -->
+        <div>
+          <div class="section-eyebrow-badge section-eyebrow-badge--blue">Browse by Industry</div>
+          <h2 id="industries-heading" class="industries-editorial-title">
+            Tactics built<br />for <em>your</em> vertical.
+          </h2>
+          <p style="font-size: 15px; color: var(--text-2); line-height: 1.65; margin-bottom: 32px;">
+            Generic marketing advice ignores the constraints of your industry —
+            regulatory, seasonal, competitive. We don't.
+          </p>
+
+          <!-- Mini stat strip -->
+          <div class="industries-stat-strip">
+            {indStatItems.map(([val, lbl], i) => (
+              <div class={`industries-stat-item ${i > 0 ? 'industries-stat-item--border' : ''}`}>
+                <div class="industries-stat-val">{val}</div>
+                <div class="industries-stat-lbl">{lbl}</div>
+              </div>
+            ))}
+          </div>
+
+          <a href="/blog" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+            Browse all industries →
+          </a>
+        </div>
+
+        <!-- Right: 2-col industry cards -->
+        <div class="industries-grid--home">
+          {INDUSTRIES.map((ind) => {
+            const meta = IND_META[ind.id];
+            return (
+              <a
+                href={`/industries/${ind.id}`}
+                class="industry-card"
+                style={meta ? `--card-color: ${meta.color}; --card-bg: ${meta.bg}` : ''}
+              >
+                <span class="industry-card-icon" aria-hidden="true">{INDUSTRY_ICONS[ind.id]}</span>
+                <div class="industry-card-body">
+                  <span class="industry-card-name">{ind.name}</span>
+                  {meta && <span class="industry-card-tagline">{meta.tagline}</span>}
+                </div>
+                <span class="industry-card-count">{ind.count} articles</span>
+              </a>
+            );
+          })}
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURED ARTICLE (Cornerstone Content) ─────────────────────────── -->
+  <section class="section" aria-labelledby="featured-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow">Cornerstone Content</div>
+        <h2 id="featured-heading" class="section-title">Start with the fundamentals.</h2>
+      </div>
+      <ArticleCardFeatured article={featuredArticle} />
+    </div>
+  </section>
+
+  <!-- ── RECENT ARTICLES (Latest Guides) ────────────────────────────────── -->
+  <section class="section section-alt" aria-labelledby="recent-heading">
+    <div class="container">
+      <div class="section-header section-header--with-link">
+        <div>
+          <div class="section-eyebrow">Latest Guides</div>
+          <h2 id="recent-heading" class="section-title">What we published this month.</h2>
+        </div>
+        <a href="/blog" class="section-view-all">See all articles →</a>
+      </div>
+      <div class="grid-3">
+        {recentArticles.map((article) => (
+          <ArticleCard article={article} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── RESOURCE HIGHLIGHTS (Free Resources) ───────────────────────────── -->
+  <section class="section" aria-labelledby="resources-heading">
+    <div class="container">
+      <div class="section-header section-header--with-link">
+        <div>
+          <div class="section-eyebrow">Free Resources</div>
+          <h2 id="resources-heading" class="section-title">Templates and tools, no email required.</h2>
+        </div>
+        <a href="/resources" class="section-view-all">View all resources →</a>
+      </div>
+      <div class="grid-3">
+        {highlightResources.map((resource) => (
+          <ResourceCard resource={resource} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── NEWSLETTER ──────────────────────────────────────────────────────── -->
+  <section class="page-section newsletter-section" aria-label="Newsletter signup">
+    <div class="container">
+      <NewsletterSignup client:idle />
+    </div>
+  </section>
+
+</Layout>

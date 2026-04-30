@@ -1,319 +1,442 @@
-// Geometric animal illustrations for niche hub pages.
-// Each SVG is designed to display on the dark hero background.
+// Realistic animal illustrations for niche hub pages.
+// Upgraded with organic contours, volumetric gradients, and depth shading for dark hero backgrounds.
 
-const Eagles = ({ c, s }) => (
+export const Eagles = ({ c, s }) => (
   <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    {/* Radar / search rings */}
-    <circle cx="160" cy="140" r="110" stroke={s} strokeWidth="1" strokeDasharray="4 6" opacity="0.3" />
-    <circle cx="160" cy="140" r="75" stroke={s} strokeWidth="1" strokeDasharray="4 6" opacity="0.4" />
-    <circle cx="160" cy="140" r="40" stroke={s} strokeWidth="1.5" opacity="0.5" />
-    {/* Crosshairs */}
-    <line x1="160" y1="30" x2="160" y2="250" stroke={s} strokeWidth="0.8" opacity="0.2" />
-    <line x1="50" y1="140" x2="270" y2="140" stroke={s} strokeWidth="0.8" opacity="0.2" />
-    {/* Eagle body */}
-    <ellipse cx="160" cy="145" rx="22" ry="28" fill={c} opacity="0.9" />
-    {/* Wings */}
-    <path d="M138 138 C110 118 72 122 50 108 C72 130 108 140 138 148Z" fill={c} opacity="0.85" />
-    <path d="M182 138 C210 118 248 122 270 108 C248 130 212 140 182 148Z" fill={c} opacity="0.85" />
-    {/* Wing secondary feathers */}
-    <path d="M138 138 C115 125 88 132 68 124" stroke={c} strokeWidth="1.5" opacity="0.5" />
-    <path d="M182 138 C205 125 232 132 252 124" stroke={c} strokeWidth="1.5" opacity="0.5" />
-    {/* Head */}
-    <circle cx="160" cy="118" r="18" fill={c} />
-    {/* Beak */}
-    <path d="M160 118 L175 125 L160 130Z" fill={s} opacity="0.7" />
-    {/* Eye */}
-    <circle cx="153" cy="114" r="5" fill="white" opacity="0.9" />
-    <circle cx="153" cy="114" r="2.5" fill={c} />
-    <circle cx="152" cy="113" r="1" fill="white" />
-    {/* Tail */}
-    <path d="M148 173 L155 195 L160 188 L165 195 L172 173Z" fill={c} opacity="0.7" />
-    {/* Altitude lines — trending up */}
-    <polyline points="55,220 85,200 115,185 145,165" stroke={s} strokeWidth="1.5" opacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
-    <polyline points="175,165 205,185 235,200 265,220" stroke={s} strokeWidth="1.5" opacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
-    {/* Data points */}
-    <circle cx="115" cy="185" r="3" fill={s} opacity="0.6" />
-    <circle cx="145" cy="165" r="3" fill={s} opacity="0.6" />
-    <circle cx="175" cy="165" r="3" fill={s} opacity="0.6" />
-    <circle cx="205" cy="185" r="3" fill={s} opacity="0.6" />
+    <defs>
+      <linearGradient id="eagleWingL" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor={c} stopOpacity="0.9" />
+        <stop offset="100%" stopColor={c} stopOpacity="0.1" />
+      </linearGradient>
+      <linearGradient id="eagleWingR" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor={c} stopOpacity="0.9" />
+        <stop offset="100%" stopColor={c} stopOpacity="0.1" />
+      </linearGradient>
+      <radialGradient id="globeGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="50%" stopColor={s} stopOpacity="0" />
+        <stop offset="100%" stopColor={s} stopOpacity="0.15" />
+      </radialGradient>
+    </defs>
+    
+    {/* Global Search / SEO Topology */}
+    <circle cx="160" cy="220" r="140" fill="url(#globeGrad)" />
+    <path d="M20 220 A140 140 0 0 0 300 220" stroke={s} strokeWidth="1" strokeDasharray="4 6" opacity="0.3" />
+    <path d="M60 220 A100 100 0 0 0 260 220" stroke={s} strokeWidth="1" strokeDasharray="2 4" opacity="0.4" />
+    <path d="M160 80 L160 300 M110 90 L80 300 M210 90 L240 300" stroke={s} strokeWidth="0.8" opacity="0.2" />
+    
+    {/* Targeting Reticle */}
+    <circle cx="160" cy="115" r="45" stroke={s} strokeWidth="1" opacity="0.15" />
+    <path d="M160 60 L160 70 M160 160 L160 170 M105 115 L115 115 M205 115 L215 115" stroke={c} strokeWidth="2" opacity="0.8" />
+    
+    {/* Majestic Geometric Wings - Left */}
+    <path d="M150 120 L110 50 L20 70 L90 135 Z" fill="url(#eagleWingL)" />
+    <path d="M145 130 L90 75 L15 105 L80 150 Z" fill="url(#eagleWingL)" opacity="0.7" />
+    <path d="M140 140 L80 105 L25 140 L85 165 Z" fill="url(#eagleWingL)" opacity="0.5" />
+    {/* Left Wing Sharp Feathers */}
+    <path d="M20 70 L10 85 L35 85 Z M15 105 L5 120 L30 120 Z M25 140 L15 155 L40 155 Z" fill={c} opacity="0.8" />
+
+    {/* Majestic Geometric Wings - Right */}
+    <path d="M170 120 L210 50 L300 70 L230 135 Z" fill="url(#eagleWingR)" />
+    <path d="M175 130 L230 75 L305 105 L240 150 Z" fill="url(#eagleWingR)" opacity="0.7" />
+    <path d="M180 140 L240 105 L295 140 L235 165 Z" fill="url(#eagleWingR)" opacity="0.5" />
+    {/* Right Wing Sharp Feathers */}
+    <path d="M300 70 L310 85 L285 85 Z M305 105 L315 120 L290 120 Z M295 140 L305 155 L280 155 Z" fill={c} opacity="0.8" />
+
+    {/* Dynamic Body & Tail */}
+    <path d="M160 110 L180 145 L160 210 L140 145 Z" fill={c} opacity="0.9" />
+    <path d="M160 150 L170 195 L160 230 L150 195 Z" fill={s} opacity="0.4" />
+    <path d="M140 180 L120 220 L160 205 Z M180 180 L200 220 L160 205 Z" fill={c} opacity="0.6" />
+
+    {/* Head & Piercing Eye */}
+    <path d="M150 115 L160 85 L170 115 Z" fill={c} />
+    <path d="M155 105 L160 70 L165 105 Z" fill={s} opacity="0.8" />
+    <path d="M160 85 L175 95 L160 100 Z" fill="white" opacity="0.9" /> {/* Beak */}
+    <circle cx="158" cy="92" r="2" fill="#000" />
   </svg>
 );
 
-const Cheetah = ({ c, s }) => (
+export const Cheetah = ({ c, s }) => (
   <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    {/* Speed lines */}
-    {[60, 80, 100, 120, 140, 160, 180, 200].map((y, i) => (
-      <line key={i} x1="20" y1={y} x2={80 + (i % 3) * 20} y2={y} stroke={s} strokeWidth="1.5" opacity={0.1 + i * 0.03} />
-    ))}
-    {/* Target ROI circle */}
-    <circle cx="220" cy="100" r="55" stroke={s} strokeWidth="1.5" strokeDasharray="5 4" opacity="0.35" />
-    <circle cx="220" cy="100" r="35" stroke={s} strokeWidth="1.5" opacity="0.45" />
-    <circle cx="220" cy="100" r="15" fill={c} opacity="0.6" />
-    <line x1="220" y1="40" x2="220" y2="160" stroke={s} strokeWidth="0.8" opacity="0.25" />
-    <line x1="160" y1="100" x2="280" y2="100" stroke={s} strokeWidth="0.8" opacity="0.25" />
-    {/* Cheetah body — sleek horizontal silhouette */}
-    <ellipse cx="135" cy="158" rx="60" ry="22" fill={c} opacity="0.9" />
-    {/* Head */}
-    <ellipse cx="192" cy="148" rx="22" ry="18" fill={c} />
+    <defs>
+      {/* Sleek metallic gradient for the upper body */}
+      <linearGradient id="cheetahGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor={s} stopOpacity="1" />
+        <stop offset="100%" stopColor={c} stopOpacity="0.3" />
+      </linearGradient>
+      {/* Digital motion blur for the background */}
+      <linearGradient id="motionFade" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor={s} stopOpacity="0" />
+        <stop offset="80%" stopColor={s} stopOpacity="0.4" />
+        <stop offset="100%" stopColor={s} stopOpacity="0" />
+      </linearGradient>
+    </defs>
+
+    {/* PPC Target Grid & Speed Lines */}
+    <circle cx="200" cy="120" r="100" stroke={s} strokeWidth="1" strokeDasharray="2 6" opacity="0.15" />
+    <circle cx="200" cy="120" r="50" stroke={s} strokeWidth="1" strokeDasharray="4 8" opacity="0.2" />
+    <path d="M 0 120 L 320 120 M 200 0 L 200 280" stroke={s} strokeWidth="0.8" opacity="0.1" />
+    
+    <path d="M 20 150 L 120 150 M 50 170 L 160 170 M 10 130 L 80 130" stroke="url(#motionFade)" strokeWidth="2" strokeLinecap="round" />
+    <path d="M 60 90 L 180 90" stroke={c} strokeWidth="1" strokeDasharray="4 8" opacity="0.3" />
+
+    {/* FAR LEGS (Adding depth behind the core body) */}
+    <path d="M 85 105 C 65 125, 45 150, 30 155 C 45 160, 65 140, 95 120 Z" fill={c} opacity="0.6" />
+    <path d="M 240 120 C 260 145, 290 170, 305 175 C 300 165, 270 135, 250 110 Z" fill={c} opacity="0.6" />
+
+    {/* TWO-TONE CHEETAH: Upper Body (Sleek Gradient Frame) */}
+    {/* This forms the head, back, tail, and upper hips */}
+    <path d="
+      M 265 80
+      C 255 75, 245 75, 240 82 
+      L 235 90
+      C 205 92, 175 92, 125 85
+      C 95 80, 80 85, 65 95
+      C 40 105, 15 105, 5 105
+      C 20 115, 45 115, 60 105
+      C 75 115, 95 125, 125 120
+      C 155 115, 180 105, 200 110
+      C 220 115, 235 125, 245 120
+      C 255 110, 260 95, 265 80 Z" 
+      fill="url(#cheetahGrad)" />
+
+    {/* TWO-TONE CHEETAH: Lower Body (Deep Muscular Shadow) */}
+    {/* This creates the extreme belly tuck, deep chest, and near legs */}
+    <path d="
+      M 60 105
+      C 40 125, 20 145, 10 150
+      C 25 155, 45 140, 70 120
+      C 95 130, 120 120, 140 115
+      C 170 110, 190 135, 215 135
+      C 250 155, 285 190, 305 195
+      C 310 185, 280 150, 255 120
+      C 245 125, 220 115, 200 110
+      C 180 105, 155 115, 125 120
+      C 95 125, 75 115, 60 105 Z" 
+      fill={c} />
+
+    {/* FACIAL DETAILS & AERODYNAMICS */}
     {/* Ear */}
-    <path d="M200 132 L210 118 L218 132Z" fill={c} opacity="0.8" />
-    <path d="M180 133 L170 119 L178 133Z" fill={c} opacity="0.8" />
-    {/* Snout */}
-    <ellipse cx="208" cy="154" rx="12" ry="8" fill={c} opacity="0.8" />
-    {/* Eye */}
-    <circle cx="197" cy="145" r="5" fill="white" opacity="0.9" />
-    <circle cx="197" cy="145" r="2.5" fill={c} />
-    <circle cx="196" cy="144" r="1" fill="white" />
-    {/* Tear mark */}
-    <path d="M196 150 L193 158" stroke={s} strokeWidth="1.5" opacity="0.5" strokeLinecap="round" />
-    {/* Legs */}
-    <path d="M90 178 L82 215 M110 178 L104 215 M150 180 L142 215 M170 180 L174 215" stroke={c} strokeWidth="8" strokeLinecap="round" opacity="0.85" />
-    {/* Tail */}
-    <path d="M76 158 C55 148 40 155 28 145" stroke={c} strokeWidth="8" strokeLinecap="round" opacity="0.7" />
-    {/* Spots */}
-    <circle cx="120" cy="150" r="5" fill={s} opacity="0.25" />
-    <circle cx="138" cy="165" r="4" fill={s} opacity="0.25" />
-    <circle cx="155" cy="148" r="4" fill={s} opacity="0.25" />
-    <circle cx="108" cy="165" r="3.5" fill={s} opacity="0.25" />
+    <path d="M 245 75 L 240 82 L 235 78 Z" fill={c} />
+    {/* Snout outline / open jaw simulation */}
+    <path d="M 265 80 L 270 85 L 265 92" stroke={c} strokeWidth="1.5" fill="none" strokeLinecap="round" />
+    <path d="M 258 92 L 263 88" stroke={c} strokeWidth="1" opacity="0.6" />
+    {/* Fierce High-contrast Eye */}
+    <circle cx="250" cy="85" r="2.5" fill="white" />
+    <circle cx="251" cy="85" r="1.2" fill="#000" />
+    {/* Signature Cheetah Tear Line */}
+    <path d="M 252 87 C 250 92, 245 97, 240 102" stroke={c} strokeWidth="2" fill="none" strokeLinecap="round" />
+
+    {/* DENSE SIGNATURE SPOTS (Mapped organically along the upper body arch) */}
+    <ellipse cx="205" cy="92" rx="2.5" ry="4" fill={c} transform="rotate(10 205 92)" />
+    <ellipse cx="220" cy="96" rx="2" ry="3.5" fill={c} transform="rotate(15 220 96)" />
+    <ellipse cx="185" cy="91" rx="3" ry="5" fill={c} transform="rotate(5 185 91)" />
+    <ellipse cx="165" cy="88" rx="3.5" ry="6" fill={c} transform="rotate(0 165 88)" />
+    <ellipse cx="145" cy="89" rx="3.5" ry="5" fill={c} transform="rotate(-5 145 89)" />
+    <ellipse cx="125" cy="92" rx="4" ry="5" fill={c} transform="rotate(-10 125 92)" />
+    <ellipse cx="105" cy="96" rx="3" ry="4" fill={c} transform="rotate(-15 105 96)" />
+    <ellipse cx="85" cy="102" rx="2.5" ry="4" fill={c} transform="rotate(-25 85 102)" />
+    
+    <ellipse cx="190" cy="100" rx="2.5" ry="4" fill={c} transform="rotate(10 190 100)" />
+    <ellipse cx="170" cy="98" rx="2.5" ry="4" fill={c} transform="rotate(5 170 98)" />
+    <ellipse cx="150" cy="98" rx="2.5" ry="4" fill={c} transform="rotate(0 150 98)" />
+    <ellipse cx="130" cy="102" rx="2.5" ry="3" fill={c} transform="rotate(-5 130 102)" />
+    <ellipse cx="110" cy="106" rx="2" ry="3" fill={c} transform="rotate(-15 110 106)" />
+    
+    <circle cx="230" cy="92" r="1.5" fill={c} />
+    <circle cx="215" cy="104" r="1.5" fill={c} />
+    <ellipse cx="180" cy="106" rx="1.5" ry="2" fill={c} transform="rotate(10 180 106)" />
+    
+    {/* Tail Base Spots */}
+    <ellipse cx="70" cy="105" rx="1.5" ry="2.5" fill={c} transform="rotate(-30 70 105)" />
+    <circle cx="55" cy="108" r="1.5" fill={c} />
+    <circle cx="40" cy="110" r="1" fill={c} />
   </svg>
 );
 
 const Dolphin = ({ c, s }) => (
   <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="dolphinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor={c} stopOpacity="1" />
+        <stop offset="100%" stopColor={c} stopOpacity="0.3" />
+      </linearGradient>
+    </defs>
     {/* Connection network */}
-    <circle cx="80" cy="60" r="6" fill={s} opacity="0.4" />
-    <circle cx="240" cy="55" r="6" fill={s} opacity="0.4" />
-    <circle cx="55" cy="180" r="6" fill={s} opacity="0.4" />
-    <circle cx="265" cy="175" r="6" fill={s} opacity="0.4" />
-    <circle cx="160" cy="30" r="6" fill={s} opacity="0.4" />
-    <line x1="80" y1="60" x2="160" y2="30" stroke={s} strokeWidth="1" opacity="0.25" />
-    <line x1="160" y1="30" x2="240" y2="55" stroke={s} strokeWidth="1" opacity="0.25" />
-    <line x1="80" y1="60" x2="55" y2="180" stroke={s} strokeWidth="1" opacity="0.2" />
-    <line x1="240" y1="55" x2="265" y2="175" stroke={s} strokeWidth="1" opacity="0.2" />
-    <line x1="55" y1="180" x2="265" y2="175" stroke={s} strokeWidth="1" opacity="0.15" />
-    {/* Leaping arc path */}
-    <path d="M45 230 Q160 20 275 230" stroke={s} strokeWidth="1.5" strokeDasharray="6 5" opacity="0.3" />
-    {/* Wave at bottom */}
-    <path d="M30 248 Q80 230 130 248 Q180 266 230 248 Q280 230 310 248" stroke={s} strokeWidth="1.5" opacity="0.3" />
-    <path d="M30 262 Q80 244 130 262 Q180 280 230 262 Q280 244 310 262" stroke={s} strokeWidth="1" opacity="0.15" />
-    {/* Dolphin body */}
-    <path d="M85 185 C95 155 120 120 160 95 C200 70 240 75 260 90 C240 115 210 130 175 140 C150 148 130 160 125 185 C115 200 95 205 85 185Z" fill={c} opacity="0.9" />
-    {/* Fin */}
-    <path d="M175 140 C185 110 205 100 215 90 C205 115 195 135 175 140Z" fill={c} />
-    {/* Snout */}
-    <path d="M258 90 L285 80 L270 100Z" fill={c} opacity="0.85" />
+    {[ [80,60], [240,55], [55,180], [265,175], [160,30] ].map(([x, y], i) => (
+      <circle key={i} cx={x} cy={y} r="5" fill={s} opacity="0.5" />
+    ))}
+    <path d="M80 60 L160 30 L240 55 L265 175 L55 180 Z" stroke={s} strokeWidth="1" opacity="0.2" fill="none" />
+    
+    {/* Waves */}
+    <path d="M20 240 Q80 220 160 240 Q240 260 300 240" stroke={s} strokeWidth="2" opacity="0.4" fill="none" />
+    
+    {/* Dolphin Body - Streamlined realistic curve */}
+    <path d="M60 195 C80 150 130 110 180 100 C230 90 260 105 270 115 C250 135 200 145 150 165 C110 180 80 210 60 195Z" fill="url(#dolphinGrad)" />
+    
+    {/* Dorsal Fin */}
+    <path d="M165 105 C170 75 190 65 200 70 C195 90 185 110 175 110Z" fill={c} />
+    
+    {/* Pectoral Fin */}
+    <path d="M185 135 C195 155 185 175 175 180 C170 160 175 145 185 135Z" fill={c} opacity="0.8" />
+    
+    {/* Snout/Beak */}
+    <path d="M265 110 C280 108 295 115 290 120 C280 122 265 120 260 115Z" fill={c} opacity="0.9" />
+    
+    {/* Tail Flukes */}
+    <path d="M65 190 C45 185 30 175 25 180 C35 195 45 205 60 200 C50 215 45 230 55 235 C65 220 75 205 70 195Z" fill="url(#dolphinGrad)" />
+    
     {/* Eye */}
-    <circle cx="248" cy="88" r="7" fill="white" opacity="0.9" />
-    <circle cx="248" cy="88" r="3.5" fill={c} />
-    <circle cx="247" cy="87" r="1.5" fill="white" />
-    {/* Tail fin */}
-    <path d="M85 185 L60 175 L70 195 L55 210 L85 195Z" fill={c} opacity="0.8" />
-    {/* Belly highlight */}
-    <path d="M100 175 C115 155 140 140 165 140" stroke="white" strokeWidth="2" opacity="0.15" strokeLinecap="round" />
+    <circle cx="250" cy="108" r="4" fill="white" />
+    <circle cx="250" cy="108" r="2" fill="#000" />
+    
+    {/* Belly Highlight */}
+    <path d="M100 170 C130 145 170 130 210 125" stroke="white" strokeWidth="2" opacity="0.2" strokeLinecap="round" fill="none" />
   </svg>
 );
 
 const Bear = ({ c, s }) => (
   <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <radialGradient id="bearGrad" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stopColor={c} stopOpacity="1" />
+        <stop offset="100%" stopColor={c} stopOpacity="0.5" />
+      </radialGradient>
+    </defs>
     {/* Map grid */}
     {[0, 1, 2, 3].map(i => (
-      <line key={`h${i}`} x1="30" y1={80 + i * 55} x2="290" y2={80 + i * 55} stroke={s} strokeWidth="0.8" opacity="0.12" />
+      <line key={`h${i}`} x1="30" y1={80 + i * 55} x2="290" y2={80 + i * 55} stroke={s} strokeWidth="1" opacity="0.15" />
     ))}
     {[0, 1, 2, 3, 4].map(i => (
-      <line key={`v${i}`} x1={50 + i * 55} y1="60" x2={50 + i * 55} y2="260" stroke={s} strokeWidth="0.8" opacity="0.12" />
+      <line key={`v${i}`} x1={50 + i * 55} y1="60" x2={50 + i * 55} y2="260" stroke={s} strokeWidth="1" opacity="0.15" />
     ))}
-    {/* Location pin */}
-    <path d="M160 40 C140 40 124 56 124 76 C124 104 160 140 160 140 C160 140 196 104 196 76 C196 56 180 40 160 40Z" fill={c} opacity="0.25" />
-    <circle cx="160" cy="76" r="16" fill={c} opacity="0.4" />
-    {/* Bear head */}
-    <circle cx="160" cy="155" r="52" fill={c} opacity="0.95" />
+    
+    {/* Bear Head - Anatomical shape instead of circle */}
+    <path d="M100 150 C100 110 130 90 160 90 C190 90 220 110 220 150 C220 190 195 215 160 215 C125 215 100 190 100 150Z" fill="url(#bearGrad)" />
+    
+    {/* Fluffy Cheeks / Neck bulk */}
+    <path d="M105 160 C85 180 100 220 130 210 C140 225 180 225 190 210 C220 220 235 180 215 160Z" fill={c} opacity="0.8" />
+    
     {/* Ears */}
-    <circle cx="118" cy="112" r="20" fill={c} />
-    <circle cx="118" cy="112" r="12" fill={s} opacity="0.3" />
-    <circle cx="202" cy="112" r="20" fill={c} />
-    <circle cx="202" cy="112" r="12" fill={s} opacity="0.3" />
-    {/* Snout */}
-    <ellipse cx="160" cy="170" rx="26" ry="20" fill={s} opacity="0.25" />
+    <path d="M110 110 C95 90 115 70 130 85 C125 95 120 105 110 110Z" fill={c} />
+    <path d="M210 110 C225 90 205 70 190 85 C195 95 200 105 210 110Z" fill={c} />
+    
+    {/* Muzzle */}
+    <path d="M135 165 C135 145 185 145 185 165 C185 195 135 195 135 165Z" fill={s} opacity="0.4" />
+    
     {/* Nose */}
-    <ellipse cx="160" cy="162" rx="10" ry="7" fill={s} opacity="0.5" />
+    <path d="M150 160 C150 155 170 155 170 160 C170 170 150 170 150 160Z" fill="#111" opacity="0.8" />
+    
     {/* Eyes */}
-    <circle cx="143" cy="148" r="8" fill="white" opacity="0.9" />
-    <circle cx="143" cy="148" r="4" fill={c} />
-    <circle cx="141" cy="146" r="1.5" fill="white" />
-    <circle cx="177" cy="148" r="8" fill="white" opacity="0.9" />
-    <circle cx="177" cy="148" r="4" fill={c} />
-    <circle cx="175" cy="146" r="1.5" fill="white" />
-    {/* Mouth */}
-    <path d="M152 175 Q160 182 168 175" stroke={s} strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+    <circle cx="140" cy="140" r="5" fill="white" />
+    <circle cx="140" cy="140" r="2.5" fill="#000" />
+    <circle cx="180" cy="140" r="5" fill="white" />
+    <circle cx="180" cy="140" r="2.5" fill="#000" />
+    
     {/* Territory rings */}
-    <circle cx="160" cy="155" r="70" stroke={s} strokeWidth="1" strokeDasharray="4 6" opacity="0.2" />
-    <circle cx="160" cy="155" r="90" stroke={s} strokeWidth="1" strokeDasharray="4 8" opacity="0.12" />
+    <circle cx="160" cy="155" r="85" stroke={s} strokeWidth="1.5" strokeDasharray="4 6" opacity="0.3" fill="none" />
   </svg>
 );
 
 const Owl = ({ c, s }) => (
   <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    {/* Grid lines */}
-    <line x1="40" y1="220" x2="280" y2="220" stroke={s} strokeWidth="1" opacity="0.25" />
-    <line x1="40" y1="180" x2="280" y2="180" stroke={s} strokeWidth="0.8" opacity="0.15" />
-    <line x1="40" y1="140" x2="280" y2="140" stroke={s} strokeWidth="0.8" opacity="0.15" />
-    {/* Bar chart columns as feathers */}
-    <rect x="58" y="170" width="18" height="50" rx="3" fill={s} opacity="0.2" />
-    <rect x="82" y="145" width="18" height="75" rx="3" fill={s} opacity="0.25" />
-    <rect x="106" y="130" width="18" height="90" rx="3" fill={s} opacity="0.3" />
-    <rect x="196" y="138" width="18" height="82" rx="3" fill={s} opacity="0.3" />
-    <rect x="220" y="150" width="18" height="70" rx="3" fill={s} opacity="0.25" />
-    <rect x="244" y="172" width="18" height="48" rx="3" fill={s} opacity="0.2" />
-    {/* Trend line */}
-    <polyline points="67,170 91,145 115,130 160,118 205,138 229,150 253,172" stroke={c} strokeWidth="2" opacity="0.7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    {/* Owl body */}
-    <ellipse cx="160" cy="175" rx="38" ry="48" fill={c} opacity="0.9" />
-    {/* Wings */}
-    <path d="M122 175 C100 165 85 175 75 195 C92 185 112 180 122 185Z" fill={c} opacity="0.8" />
-    <path d="M198 175 C220 165 235 175 245 195 C228 185 208 180 198 185Z" fill={c} opacity="0.8" />
-    {/* Head */}
-    <circle cx="160" cy="133" r="38" fill={c} />
-    {/* Ear tufts */}
-    <path d="M141 100 L135 80 L150 96Z" fill={c} />
-    <path d="M179 100 L185 80 L170 96Z" fill={c} />
-    {/* Facial disc */}
-    <ellipse cx="160" cy="135" rx="34" ry="32" stroke={s} strokeWidth="1.5" opacity="0.3" />
-    {/* Eyes — data chart circles */}
-    <circle cx="145" cy="130" r="16" fill="white" opacity="0.95" />
-    <circle cx="145" cy="130" r="10" fill={c} />
-    <circle cx="145" cy="130" r="5" fill={s} opacity="0.8" />
-    <circle cx="143" cy="128" r="2" fill="white" />
-    <circle cx="175" cy="130" r="16" fill="white" opacity="0.95" />
-    <circle cx="175" cy="130" r="10" fill={c} />
-    <circle cx="175" cy="130" r="5" fill={s} opacity="0.8" />
-    <circle cx="173" cy="128" r="2" fill="white" />
+    <defs>
+      <linearGradient id="owlGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor={c} stopOpacity="1" />
+        <stop offset="100%" stopColor={c} stopOpacity="0.4" />
+      </linearGradient>
+    </defs>
+    {/* Bar chart / Night cityscape */}
+    {[ [58,170,50], [82,145,75], [106,130,90], [196,138,82], [220,150,70], [244,172,48] ].map(([x, y, h], i) => (
+      <rect key={i} x={x} y={y} width="18" height={h} rx="2" fill={s} opacity="0.2" />
+    ))}
+    <polyline points="67,170 91,145 115,130 160,118 205,138 229,150 253,172" stroke={s} strokeWidth="2" opacity="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    
+    {/* Owl Body - Plump, realistic curve */}
+    <path d="M120 150 C100 190 120 230 160 230 C200 230 220 190 200 150 Z" fill="url(#owlGrad)" />
+    
+    {/* Wings folded */}
+    <path d="M120 150 C95 180 105 220 130 225 C115 200 125 170 140 155 Z" fill={c} opacity="0.7" />
+    <path d="M200 150 C225 180 215 220 190 225 C205 200 195 170 180 155 Z" fill={c} opacity="0.7" />
+    
+    {/* Head & Facial Disc (Heart shape) */}
+    <path d="M115 110 C115 75 205 75 205 110 C205 140 160 150 160 150 C160 150 115 140 115 110Z" fill="url(#owlGrad)" />
+    <path d="M120 110 C120 85 160 95 160 115 C160 95 200 85 200 110 C200 135 160 145 160 145 C160 145 120 135 120 110Z" fill={s} opacity="0.3" />
+    
+    {/* Ear Tufts */}
+    <path d="M125 85 C115 70 120 60 135 70 Z" fill={c} />
+    <path d="M195 85 C205 70 200 60 185 70 Z" fill={c} />
+    
+    {/* Large Eyes */}
+    <circle cx="142" cy="112" r="14" fill="white" />
+    <circle cx="142" cy="112" r="8" fill={c} />
+    <circle cx="142" cy="112" r="4" fill="#000" />
+    <circle cx="178" cy="112" r="14" fill="white" />
+    <circle cx="178" cy="112" r="8" fill={c} />
+    <circle cx="178" cy="112" r="4" fill="#000" />
+    
     {/* Beak */}
-    <path d="M152 140 L160 152 L168 140Z" fill={s} opacity="0.5" />
-    {/* Feet */}
-    <path d="M148 220 L138 238 M155 222 L150 240 M165 222 L170 240 M172 220 L182 238" stroke={c} strokeWidth="4" strokeLinecap="round" opacity="0.7" />
+    <path d="M156 125 L164 125 L160 138 Z" fill={s} opacity="0.8" />
+    
+    {/* Talons */}
+    <path d="M140 230 C135 240 145 245 145 230 M150 230 C145 240 155 245 155 230 M165 230 C160 240 170 245 170 230 M175 230 C170 240 180 245 180 230" stroke={c} strokeWidth="3" fill="none" strokeLinecap="round" />
   </svg>
 );
 
 const Elephant = ({ c, s }) => (
   <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    {/* Document stacks */}
-    <rect x="30" y="150" width="55" height="75" rx="4" fill={s} opacity="0.12" />
-    <rect x="35" y="140" width="55" height="75" rx="4" fill={s} opacity="0.15" />
-    <rect x="40" y="130" width="55" height="75" rx="4" fill={s} opacity="0.18" />
-    <line x1="48" y1="148" x2="87" y2="148" stroke={s} strokeWidth="1.5" opacity="0.3" />
-    <line x1="48" y1="158" x2="87" y2="158" stroke={s} strokeWidth="1.5" opacity="0.25" />
-    <line x1="48" y1="168" x2="75" y2="168" stroke={s} strokeWidth="1.5" opacity="0.2" />
-    <rect x="235" y="140" width="55" height="75" rx="4" fill={s} opacity="0.12" />
-    <rect x="230" y="130" width="55" height="75" rx="4" fill={s} opacity="0.15" />
-    <line x1="238" y1="148" x2="277" y2="148" stroke={s} strokeWidth="1.5" opacity="0.3" />
-    <line x1="238" y1="158" x2="277" y2="158" stroke={s} strokeWidth="1.5" opacity="0.25" />
-    <line x1="238" y1="168" x2="265" y2="168" stroke={s} strokeWidth="1.5" opacity="0.2" />
-    {/* Elephant body */}
-    <ellipse cx="160" cy="185" rx="68" ry="55" fill={c} opacity="0.9" />
-    {/* Head */}
-    <circle cx="160" cy="125" r="50" fill={c} />
-    {/* Ears */}
-    <ellipse cx="105" cy="125" rx="32" ry="42" fill={c} opacity="0.8" />
-    <ellipse cx="105" cy="125" rx="22" ry="30" fill={s} opacity="0.15" />
-    <ellipse cx="215" cy="125" rx="32" ry="42" fill={c} opacity="0.8" />
-    <ellipse cx="215" cy="125" rx="22" ry="30" fill={s} opacity="0.15" />
-    {/* Trunk */}
-    <path d="M138 155 C130 170 118 185 115 205 C112 220 120 230 130 228 C138 226 140 215 140 205 C140 195 145 182 150 175" stroke={c} strokeWidth="20" strokeLinecap="round" fill="none" opacity="0.9" />
-    {/* Tusk */}
-    <path d="M138 158 C128 168 118 178 108 182" stroke={s} strokeWidth="5" strokeLinecap="round" opacity="0.4" />
-    {/* Eyes */}
-    <circle cx="145" cy="115" r="9" fill="white" opacity="0.9" />
-    <circle cx="145" cy="115" r="5" fill={c} />
-    <circle cx="143" cy="113" r="2" fill="white" />
-    <circle cx="175" cy="115" r="9" fill="white" opacity="0.9" />
-    <circle cx="175" cy="115" r="5" fill={c} />
-    <circle cx="173" cy="113" r="2" fill="white" />
-    {/* Legs */}
-    <rect x="120" y="228" width="22" height="40" rx="8" fill={c} opacity="0.85" />
-    <rect x="148" y="230" width="22" height="38" rx="8" fill={c} opacity="0.85" />
-    <rect x="178" y="228" width="22" height="40" rx="8" fill={c} opacity="0.85" />
-    {/* Compounding arrow */}
-    <path d="M200 80 C220 70 240 75 255 65" stroke={s} strokeWidth="2" opacity="0.4" strokeLinecap="round" />
-    <path d="M248 58 L258 65 L248 72" stroke={s} strokeWidth="2" opacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
+    <defs>
+      <linearGradient id="elephantGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor={c} stopOpacity="1" />
+        <stop offset="100%" stopColor={c} stopOpacity="0.5" />
+      </linearGradient>
+    </defs>
+    {/* Document Stacks */}
+    <rect x="35" y="140" width="50" height="70" rx="3" fill={s} opacity="0.15" />
+    <rect x="40" y="130" width="50" height="70" rx="3" fill={s} opacity="0.2" />
+    <rect x="230" y="130" width="50" height="70" rx="3" fill={s} opacity="0.2" />
+    <path d="M200 80 C220 70 240 75 255 65" stroke={s} strokeWidth="2" opacity="0.5" fill="none" />
+    
+    {/* Massive Body */}
+    <path d="M110 160 C90 200 120 240 160 240 C200 240 230 200 210 160 Z" fill="url(#elephantGrad)" opacity="0.9" />
+    
+    {/* Large African Ears - Folded & realistic */}
+    <path d="M140 100 C80 80 60 140 90 170 C105 185 130 160 140 140 Z" fill={c} opacity="0.85" />
+    <path d="M180 100 C240 80 260 140 230 170 C215 185 190 160 180 140 Z" fill={c} opacity="0.85" />
+    
+    {/* Head shape with domed crown */}
+    <path d="M130 120 C130 80 190 80 190 120 C190 150 175 160 160 160 C145 160 130 150 130 120Z" fill="url(#elephantGrad)" />
+    
+    {/* Sweeping Trunk with wrinkles */}
+    <path d="M145 150 C145 190 120 220 125 240 C130 250 145 250 150 240 C155 220 170 190 170 150 Z" fill={c} />
+    <line x1="140" y1="180" x2="165" y2="180" stroke={s} strokeWidth="1" opacity="0.4" />
+    <line x1="135" y1="200" x2="158" y2="200" stroke={s} strokeWidth="1" opacity="0.4" />
+    <line x1="130" y1="220" x2="152" y2="220" stroke={s} strokeWidth="1" opacity="0.4" />
+    
+    {/* Tusks */}
+    <path d="M135 155 C120 170 105 180 95 180 C110 185 125 175 140 165 Z" fill="white" opacity="0.7" />
+    <path d="M185 155 C200 170 215 180 225 180 C210 185 195 175 180 165 Z" fill="white" opacity="0.7" />
+    
+    {/* Small wise eyes */}
+    <circle cx="145" cy="125" r="3" fill="#111" />
+    <circle cx="175" cy="125" r="3" fill="#111" />
   </svg>
 );
 
-const Hummingbird = ({ c, s }) => (
+export const Hummingbird = ({ c, s }) => (
   <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    {/* Email envelope */}
-    <rect x="55" y="180" width="155" height="85" rx="6" fill={s} opacity="0.12" />
-    <path d="M55 186 L132 235 L210 186" stroke={s} strokeWidth="1.5" opacity="0.3" />
-    <line x1="55" y1="265" x2="210" y2="265" stroke={s} strokeWidth="1" opacity="0.15" />
-    {/* Envelope opening lines */}
-    <line x1="75" y1="200" x2="120" y2="200" stroke={s} strokeWidth="1.5" opacity="0.2" />
-    <line x1="75" y1="215" x2="115" y2="215" stroke={s} strokeWidth="1.5" opacity="0.2" />
-    {/* Motion blur lines behind bird */}
-    <path d="M30 138 L75 138" stroke={s} strokeWidth="2" opacity="0.15" strokeLinecap="round" />
-    <path d="M35 148 L72 148" stroke={s} strokeWidth="1.5" opacity="0.12" strokeLinecap="round" />
-    <path d="M40 128 L70 128" stroke={s} strokeWidth="1" opacity="0.1" strokeLinecap="round" />
-    {/* Body */}
-    <ellipse cx="120" cy="138" rx="42" ry="15" fill={c} opacity="0.95" />
-    {/* Head */}
-    <circle cx="157" cy="134" r="18" fill={c} />
-    {/* Beak */}
-    <path d="M172 130 L215 120 L172 138Z" fill={c} opacity="0.85" />
-    {/* Eye */}
-    <circle cx="162" cy="129" r="6" fill="white" opacity="0.9" />
-    <circle cx="162" cy="129" r="3" fill={c} />
-    <circle cx="161" cy="128" r="1.2" fill="white" />
-    {/* Upper wing (blurred) */}
-    <path d="M118 125 C110 95 130 65 160 55 C145 75 128 100 122 125Z" fill={c} opacity="0.55" />
-    <path d="M118 125 C108 92 125 60 155 48 C138 70 125 97 122 125Z" fill={s} opacity="0.3" />
-    {/* Lower wing */}
-    <path d="M118 152 C108 175 125 200 150 208 C135 190 122 170 120 152Z" fill={c} opacity="0.45" />
-    {/* Tail */}
-    <path d="M78 135 L50 125 L60 140 L45 152 L78 142Z" fill={c} opacity="0.8" />
-    {/* Flower/target the hummingbird hovers near */}
-    <circle cx="248" cy="100" r="22" stroke={s} strokeWidth="1.5" strokeDasharray="4 5" opacity="0.35" />
-    <circle cx="248" cy="100" r="10" fill={c} opacity="0.3" />
-    <circle cx="248" cy="100" r="4" fill={s} opacity="0.5" />
-    {/* Delivery checkmark */}
-    <path d="M235 245 L245 255 L268 232" stroke={c} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+    <defs>
+      <linearGradient id="bodyGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor={c} stopOpacity="1" />
+        <stop offset="60%" stopColor={c} stopOpacity="0.8" />
+        <stop offset="100%" stopColor="white" stopOpacity="0.2" />
+      </linearGradient>
+      <linearGradient id="bellyGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="white" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="white" stopOpacity="0.1" />
+      </linearGradient>
+      <radialGradient id="targetGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor={s} stopOpacity="0.4" />
+        <stop offset="100%" stopColor={s} stopOpacity="0" />
+      </radialGradient>
+      <linearGradient id="wingMotion" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor={c} stopOpacity="0.8" />
+        <stop offset="100%" stopColor={c} stopOpacity="0" />
+      </linearGradient>
+    </defs>
+
+    {/* Background Tech/Email Grid */}
+    <path d="M20 240 L140 270 L300 220" stroke={s} strokeWidth="1" strokeDasharray="2 4" opacity="0.3" />
+    <path d="M60 200 L120 230 L260 170" stroke={s} strokeWidth="1" opacity="0.15" />
+    
+    {/* Delivery Target / Nectar Node */}
+    <circle cx="260" cy="90" r="45" fill="url(#targetGlow)" />
+    <circle cx="260" cy="90" r="12" stroke={s} strokeWidth="1.5" strokeDasharray="3 4" opacity="0.6" />
+    <circle cx="260" cy="90" r="3" fill={s} />
+    <path d="M260 40 L260 140 M210 90 L310 90" stroke={s} strokeWidth="1" opacity="0.2" />
+
+    {/* Rapid Wings - Layered overlapping arrays mimicking motion blur */}
+    {/* Far Wing */}
+    <path d="M150 135 L60 80 L100 65 Z" fill="url(#wingMotion)" opacity="0.4" />
+    <path d="M150 135 L50 95 L90 75 Z" fill={c} opacity="0.3" />
+    <path d="M150 135 L45 110 L85 90 Z" fill={s} opacity="0.3" />
+    
+    {/* Near Wing */}
+    <path d="M145 145 C110 110 50 110 30 115 C70 135 120 155 145 145 Z" fill="url(#wingMotion)" opacity="0.6" />
+    <path d="M145 145 L40 130 L90 140 Z" fill={c} opacity="0.7" />
+    <path d="M145 145 L45 145 L100 155 Z" fill={s} opacity="0.5" />
+    
+    {/* Feather Blades for Near Wing */}
+    <path d="M140 140 L35 120 L40 125 Z M140 140 L45 135 L50 140 Z M140 140 L60 150 L65 155 Z" fill={c} opacity="0.8" />
+
+    {/* Flared Tail Feathers (matching the pointed downward angle) */}
+    <path d="M95 175 L40 225 L75 190 Z" fill={c} opacity="0.9" />
+    <path d="M95 175 L30 210 L65 180 Z" fill="url(#bodyGrad)" />
+    <path d="M95 175 L55 235 L85 200 Z" fill={s} opacity="0.5" />
+
+    {/* Core Body - Much plumper, arched back and fuller belly */}
+    <path d="M85 180 C110 135 165 125 185 135 C175 185 120 205 85 180 Z" fill="url(#bodyGrad)" />
+    
+    {/* White Belly Under-layer */}
+    <path d="M95 180 C125 160 160 150 175 140 C155 180 125 195 95 180 Z" fill="url(#bellyGrad)" />
+
+    {/* Head - Rounder and larger to match the body */}
+    <path d="M175 130 C170 100 205 105 210 120 C215 135 195 150 175 130 Z" fill={c} />
+    
+    {/* Textured Gorget (Throat Patch) - Shifted to match the new larger chest */}
+    <path d="M185 135 L195 150 L205 130 Z" fill={s} opacity="0.9" />
+    <path d="M188 145 L198 160 L203 140 Z" fill={s} opacity="0.7" />
+    <path d="M178 130 L188 142 L193 125 Z" fill={s} />
+
+    {/* Shorter Beak - Accurately proportioned, pointing at the target but not touching it */}
+    <path d="M205 116 L240 104 L205 122 Z" fill={c} opacity="0.95" />
+    <path d="M205 119 L240 104" stroke={s} strokeWidth="0.5" opacity="0.8" />
+
+    {/* High-contrast Eye & Brow */}
+    <circle cx="195" cy="115" r="4.5" fill="white" />
+    <circle cx="196" cy="115" r="2.5" fill="#000" />
+    <circle cx="197" cy="114" r="1" fill="white" />
+    <path d="M185 110 C190 108 195 110 198 114" stroke={s} strokeWidth="1.5" fill="none" strokeLinecap="round" />
+
+    {/* Tiny Tucked Feet - Moved down to the new belly line */}
+    <path d="M130 190 L125 200 L130 202 M140 185 L135 195 L140 197" stroke={c} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
   </svg>
 );
 
 const Chameleon = ({ c, s }) => (
   <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    {/* A/B split divider */}
+    <defs>
+      <linearGradient id="chamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor={c} stopOpacity="1" />
+        <stop offset="100%" stopColor={s} stopOpacity="0.8" />
+      </linearGradient>
+    </defs>
+    {/* A/B Testing Background */}
     <line x1="160" y1="30" x2="160" y2="260" stroke={s} strokeWidth="1.5" strokeDasharray="6 4" opacity="0.3" />
-    <rect x="40" y="50" width="100" height="16" rx="8" fill={s} opacity="0.12" />
-    <rect x="180" y="50" width="100" height="16" rx="8" fill={c} opacity="0.3" />
-    <text x="90" y="63" fill="white" fontSize="9" textAnchor="middle" opacity="0.4" fontFamily="monospace">A</text>
-    <text x="230" y="63" fill="white" fontSize="9" textAnchor="middle" opacity="0.6" fontFamily="monospace">B</text>
-    {/* Conversion funnel */}
-    <path d="M55 90 L265 90 L220 130 L100 130Z" fill={s} opacity="0.1" />
-    <path d="M100 130 L220 130 L195 165 L125 165Z" fill={s} opacity="0.12" />
-    <path d="M125 165 L195 165 L178 200 L142 200Z" fill={s} opacity="0.15" />
-    <path d="M142 200 L178 200 L168 230 L152 230Z" fill={c} opacity="0.3" />
-    {/* Chameleon body */}
-    <path d="M85 165 C95 150 115 140 140 138 C165 136 185 140 200 155 C210 165 212 178 205 190 C195 205 175 210 155 208 C130 205 110 198 98 185 C88 175 82 173 85 165Z" fill={c} opacity="0.9" />
-    {/* Head */}
-    <path d="M200 155 C218 148 235 148 248 155 C260 162 262 175 252 183 C240 192 220 192 205 185 C193 178 190 167 200 155Z" fill={c} />
-    {/* Casque / helmet ridge */}
-    <path d="M210 148 C218 135 235 132 248 140 L248 155 C235 148 218 148 210 155Z" fill={c} opacity="0.8" />
-    {/* Eye — spiral / data */}
-    <circle cx="238" cy="168" r="14" fill="white" opacity="0.9" />
-    <circle cx="238" cy="168" r="9" fill={c} />
-    <circle cx="238" cy="168" r="5" fill={s} opacity="0.7" />
-    <circle cx="236" cy="166" r="2" fill="white" />
-    {/* Turret eye ring */}
-    <circle cx="238" cy="168" r="14" stroke={s} strokeWidth="1" opacity="0.4" />
-    {/* Tongue */}
-    <path d="M252 172 C268 172 280 168 288 165" stroke={c} strokeWidth="5" strokeLinecap="round" opacity="0.8" />
-    <circle cx="290" cy="164" r="5" fill={s} opacity="0.6" />
-    {/* Spiral tail */}
-    <path d="M85 172 C72 172 62 180 60 192 C58 204 66 212 78 212 C90 212 96 204 94 194 C92 186 84 182 78 185" stroke={c} strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.85" />
-    {/* Legs */}
-    <path d="M120 205 L112 235 M145 208 L142 238 M165 208 L168 238 M185 202 L190 232" stroke={c} strokeWidth="7" strokeLinecap="round" opacity="0.8" />
-    {/* Test tube */}
-    <rect x="265" y="210" width="14" height="40" rx="7" fill={s} opacity="0.3" />
-    <path d="M265 230 L279 230" stroke={s} strokeWidth="1" opacity="0.4" />
-    <circle cx="272" cy="244" r="5" fill={c} opacity="0.5" />
+    
+    {/* Chameleon Body - Arched back, sagging belly */}
+    <path d="M90 160 C90 130 150 120 190 140 C210 150 210 180 190 195 C150 215 100 200 90 160 Z" fill="url(#chamGrad)" />
+    
+    {/* Head & Casque (Helmet ridge) */}
+    <path d="M185 150 C210 140 240 145 245 160 C250 175 220 190 195 185 Z" fill={c} />
+    <path d="M190 150 C205 110 235 130 240 155 Z" fill="url(#chamGrad)" opacity="0.9" />
+    
+    {/* Serrated Back Ridge */}
+    <path d="M100 142 L110 135 L120 140 L130 132 L140 138 L150 130 L160 136 L170 132 L180 140" stroke={c} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    
+    {/* Turret Eye */}
+    <circle cx="225" cy="165" r="12" fill={c} stroke={s} strokeWidth="2" opacity="0.9" />
+    <circle cx="228" cy="165" r="4" fill="#111" />
+    <circle cx="229" cy="164" r="1.5" fill="white" />
+    
+    {/* Prehensile Coiled Tail */}
+    <path d="M95 170 C60 170 45 200 65 215 C85 230 110 210 100 195 C90 180 75 190 80 200 C85 210 95 205 90 195" stroke="url(#chamGrad)" strokeWidth="10" fill="none" strokeLinecap="round" />
+    
+    {/* Articulated Legs & Grasping Feet */}
+    <path d="M120 195 L110 220 L125 225 M170 190 L180 220 L165 225" stroke={c} strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
+    
+    {/* Darting Tongue */}
+    <path d="M245 170 Q270 165 290 165" stroke={c} strokeWidth="4" fill="none" strokeLinecap="round" />
+    <circle cx="292" cy="165" r="4" fill={s} opacity="0.8" />
   </svg>
 );
 

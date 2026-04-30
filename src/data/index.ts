@@ -64,6 +64,11 @@ export interface Author {
   name: string;
   initials: string;
   role: string;
+  bio?: string;
+  linkedin?: string;
+  twitter?: string;
+  instagram?: string;
+  email?: string;
 }
 
 export interface Article {
@@ -87,7 +92,11 @@ export const ARTICLES: Article[] = [
     id: 1, slug: 'technical-seo-checklist-2026',
     title: 'The 2026 Technical SEO Checklist: 47 Checks That Actually Move the Needle',
     excerpt: 'Most technical SEO checklists recycle the same 12 items. After auditing 400+ sites, we compiled the checks that correlate with measurable ranking gains — ranked by impact.',
-    author: { name: 'Maya Chen', initials: 'MC', role: 'Head of SEO' },
+    author: {
+      name: 'Maya Chen', initials: 'MC', role: 'Head of SEO',
+      bio: "Maya leads SEO strategy at GTM Remixed, with 10+ years running technical SEO programs for enterprise and growth-stage companies. Before GTM Remixed, she headed organic search at two Series B SaaS companies.",
+      linkedin: '#', twitter: '#', instagram: '#', email: 'maya@gtmremixed.com',
+    },
     date: 'April 18, 2026', updated: 'April 24, 2026',
     readTime: '14 min', niche: 'SEO', industry: 'All Industries',
     tags: ['technical-seo', 'core-web-vitals', 'crawlability'], featured: true,

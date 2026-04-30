@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm install *)",
-      "WebFetch(domain:019dcecc-6929-7026-95c9-c9bc6f69e6c2.claudeusercontent.com)"
+      "WebFetch(domain:019dcecc-6929-7026-95c9-c9bc6f69e6c2.claudeusercontent.com)",
+      "Bash(npm run *)"
     ]
   }
 }

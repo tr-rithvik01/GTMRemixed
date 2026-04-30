@@ -1,47 +1,13 @@
 ---
-/**
- * src/pages/blog/[slug].astro — Individual article page
- *
- * URL pattern: /blog/:slug
- * Examples:
- *   /blog/technical-seo-checklist-2026
- *   /blog/google-ads-quality-score-framework
- *
- * STATIC GENERATION:
- * getStaticPaths() runs at BUILD TIME in Node.js. It returns one entry per
- * article, which Astro uses to pre-render one HTML file per slug. The resulting
- * files are uploaded to Cloudflare Pages as static assets.
- *
- * WHY getStaticPaths() instead of a dynamic SSR route?
- * output: 'static' means every route must be known at build time. There's no
- * server runtime on Cloudflare Pages for a static deployment. getStaticPaths()
- * is Astro's mechanism for "enumerate all possible values of [slug]".
- *
- * REACT ISLANDS ON THIS PAGE:
- *   - ReadingProgress (client:load)  — scroll-based progress bar at top
- *   - TableOfContents (client:load)  — sticky ToC with active heading tracking
- *   - ShareBar (client:idle)         — copy link + social share buttons
- *   - NewsletterSignup (client:idle) — email capture between article content
- *   - CodeBlock (client:visible)     — copy-to-clipboard for code snippets
- *
- * NOTE: Article BODY CONTENT is placeholder prose. Replace with real MDX or
- * a CMS integration (Contentful, Sanity, etc.) when ready.
- */
-
 import Layout from '../../layouts/Layout.astro';
 import ReadingProgress from '../../components/react/ReadingProgress';
-import TableOfContents from '../../components/react/TableOfContents';
+import ArticleAudioPlayer from '../../components/react/ArticleAudioPlayer';
 import ShareBar from '../../components/react/ShareBar';
 import NewsletterSignup from '../../components/react/NewsletterSignup';
 import TagBadge from '../../components/astro/TagBadge.astro';
 import CalloutBox from '../../components/astro/CalloutBox.astro';
-
 import { ARTICLES } from '../../data/index';
 
-// ── getStaticPaths ────────────────────────────────────────────────────────────
-// LESSON: This function MUST be exported from any file-based dynamic route
-// when output: 'static'. It runs in Node.js at build time, not in the browser.
-// Return an array of { params, props } objects — one per page to pre-render.
 export function getStaticPaths() {
   return ARTICLES.map((article) => ({
     params: { slug: article.slug },
@@ -49,27 +15,9 @@ export function getStaticPaths() {
   }));
 }
 
-// ── Page props ────────────────────────────────────────────────────────────────
-// Astro injects the props from the matching getStaticPaths() entry.
 const { article } = Astro.props;
-
-// Construct canonical URL — important for SEO when articles are shared.
 const canonicalUrl = `https://gtmremixed.com/blog/${article.slug}`;
 
-// ── Table of Contents data ─────────────────────────────────────────────────────
-// In a real MDX setup, extract headings from the compiled MDX output.
-// For now, provide a static placeholder ToC matching the article stub below.
-const headings = [
-  { id: 'introduction',  text: 'Introduction',         depth: 2 },
-  { id: 'methodology',   text: 'Methodology',          depth: 2 },
-  { id: 'key-findings',  text: 'Key Findings',         depth: 2 },
-  { id: 'section-one',   text: 'Section 1',            depth: 3 },
-  { id: 'section-two',   text: 'Section 2',            depth: 3 },
-  { id: 'implementation',text: 'Implementation Guide', depth: 2 },
-  { id: 'conclusion',    text: 'Conclusion',           depth: 2 },
-];
-
-// ── Schema.org Article markup ──────────────────────────────────────────────────
 const schemaJson = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Article',
@@ -89,6 +37,8 @@ const schemaJson = JSON.stringify({
   dateModified: article.updated ?? article.date,
   url: canonicalUrl,
 });
+
+const isSEOChecklist = article.slug === 'technical-seo-checklist-2026';
 ---
 
 <Layout
@@ -96,56 +46,34 @@ const schemaJson = JSON.stringify({
   description={article.excerpt}
   canonicalUrl={canonicalUrl}
 >
-  <!-- Schema.org markup -->
   <script type="application/ld+json" set:html={schemaJson}></script>
-
-  <!--
-    ReadingProgress drives the fixed progress bar in Layout.astro.
-    Must be client:load — scroll events start immediately on page load.
-  -->
   <ReadingProgress client:load />
 
-  <div class="article-layout container">
+  <div class="container-sm article-page-wrap">
 
-    <!-- ── Sidebar — Table of Contents ─────────────────────────────────── -->
-    <aside class="article-toc-aside" aria-label="Table of contents">
-      <!--
-        TableOfContents uses IntersectionObserver to highlight the active
-        heading. client:load ensures tracking starts from the first scroll.
-      -->
-      <TableOfContents client:load headings={headings} />
-    </aside>
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list">
+        <li class="breadcrumb-item"><a href="/" class="breadcrumb-link">Home</a></li>
+        <li class="breadcrumb-item"><a href="/blog" class="breadcrumb-link">Blog</a></li>
+        {article.niche && (
+          <li class="breadcrumb-item">
+            <a
+              href={`/niches/${article.niche.toLowerCase().replace(/\s+/g, '-')}`}
+              class="breadcrumb-link"
+            >{article.niche}</a>
+          </li>
+        )}
+        <li class="breadcrumb-item breadcrumb-item--current" aria-current="page">
+          {article.title}
+        </li>
+      </ol>
+    </nav>
 
-    <!-- ── Main article content ─────────────────────────────────────────── -->
     <article class="article-content" itemscope itemtype="https://schema.org/Article">
-      <!-- ── Breadcrumb ──────────────────────────────────────────────── -->
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <ol class="breadcrumb-list">
-          <li class="breadcrumb-item">
-            <a href="/" class="breadcrumb-link">Home</a>
-          </li>
-          <li class="breadcrumb-item">
-            <a href="/blog" class="breadcrumb-link">Blog</a>
-          </li>
-          {article.niche && (
-            <li class="breadcrumb-item">
-              <a
-                href={`/niches/${article.niche.toLowerCase().replace(/\s+/g, '-')}`}
-                class="breadcrumb-link"
-              >
-                {article.niche}
-              </a>
-            </li>
-          )}
-          <li class="breadcrumb-item breadcrumb-item--current" aria-current="page">
-            {article.title}
-          </li>
-        </ol>
-      </nav>
 
-      <!-- ── Article header ─────────────────────────────────────────── -->
+      <!-- ── 1. Heading: Tags + H1 + Meta ─────────────────────────────── -->
       <header class="article-header">
-        <!-- Tags -->
         <div class="article-header-tags">
           {article.niche && (
             <TagBadge
@@ -161,20 +89,14 @@ const schemaJson = JSON.stringify({
 
         <h1 class="article-title" itemprop="headline">{article.title}</h1>
 
-        <p class="article-excerpt" itemprop="description">{article.excerpt}</p>
-
-        <!-- Author + meta row -->
         <div class="article-meta-row">
           <div class="author-bio-sm">
-            <div class="author-avatar" aria-hidden="true">
-              {article.author.initials}
-            </div>
+            <div class="author-avatar" aria-hidden="true">{article.author.initials}</div>
             <div class="author-bio-text">
               <span class="author-name" itemprop="author">{article.author.name}</span>
               <span class="author-role">{article.author.role}</span>
             </div>
           </div>
-
           <div class="article-meta-details">
             <span class="article-date">
               Published <time itemprop="datePublished">{article.date}</time>
@@ -187,91 +109,258 @@ const schemaJson = JSON.stringify({
             <span class="article-read-time">{article.readTime} read</span>
           </div>
         </div>
-
-        <!-- Share bar — client:idle because it's below the fold initially -->
-        <ShareBar client:idle url={canonicalUrl} title={article.title} />
       </header>
 
-      <!-- ── Article body (placeholder) ─────────────────────────────── -->
-      <!--
-        LESSON: Article body placeholder
-        In a production CMS-driven setup, this content would come from MDX,
-        Contentful, or similar. For the prototype, we render structured
-        placeholder content that demonstrates all the component types.
-
-        Replace this entire section with:
-          import { Content } from '../../../content/blog/${article.slug}.mdx';
-          <Content />
-        ...once you integrate a content source.
-      -->
-      <div class="article-body" itemprop="articleBody">
-        <h2 id="introduction">Introduction</h2>
-        <p>
-          {article.excerpt} This article dives deep into the data, frameworks,
-          and implementation steps that will help you replicate these results
-          in your own programs.
-        </p>
-
-        <CalloutBox variant="tip" title="Before you start">
-          Make sure you have access to your analytics platform and any relevant
-          ad or SEO dashboards. You'll want to verify results as you implement
-          each section.
-        </CalloutBox>
-
-        <h2 id="methodology">Methodology</h2>
-        <p>
-          Our analysis covered 400+ campaigns across the {article.niche} channel,
-          spanning the {article.industry} industry over an 18-month period.
-          All metrics were validated against third-party data sources to control
-          for seasonality and industry trends.
-        </p>
-
-        <h2 id="key-findings">Key Findings</h2>
-
-        <h3 id="section-one">Section 1</h3>
-        <p>
-          The first finding challenges conventional wisdom in {article.niche}:
-          [placeholder content — connect your CMS here].
-        </p>
-
-        <h3 id="section-two">Section 2</h3>
-        <p>
-          The second finding has significant implications for budget allocation
-          and channel prioritisation: [placeholder content].
-        </p>
-
-        <!-- Newsletter insert — mid-article -->
-        <div class="article-newsletter-insert">
-          <NewsletterSignup client:idle />
+      <!-- ── 2. Cover image placeholder ───────────────────────────────── -->
+      <div class="article-cover" aria-hidden="true">
+        <div class="article-cover-stripe"></div>
+        <div class="article-cover-label">
+          <p class="article-cover-label-text">{article.imageLabel}</p>
         </div>
-
-        <h2 id="implementation">Implementation Guide</h2>
-        <p>
-          Here's how to apply these findings to your own {article.niche} program:
-        </p>
-
-        <ol>
-          <li>Start by auditing your current baseline metrics.</li>
-          <li>Identify which of the 6 winning patterns applies to your situation.</li>
-          <li>Implement one change at a time and measure for 14 days before the next.</li>
-        </ol>
-
-        <CalloutBox variant="warning" title="Common mistake">
-          Implementing multiple changes simultaneously makes it impossible to
-          attribute results. Always change one variable at a time.
-        </CalloutBox>
-
-        <h2 id="conclusion">Conclusion</h2>
-        <p>
-          The data from {article.readTime} of research points to a clear pattern:
-          [placeholder conclusion]. Apply this framework to your own program
-          and measure the results after 30 days.
-        </p>
       </div>
 
-      <!-- ── Article footer ─────────────────────────────────────────── -->
+      <!-- ── 3. Subtitle ───────────────────────────────────────────────── -->
+      <p class="article-subtitle" itemprop="description">{article.excerpt}</p>
+
+      <!-- ── 4. Audio player ───────────────────────────────────────────── -->
+      <ArticleAudioPlayer client:load duration={article.readTime} />
+
+      <!-- ── 5. Article body ───────────────────────────────────────────── -->
+      <div class="article-body" itemprop="articleBody">
+
+        <!-- Highlights callout (200–250 chars) -->
+        <div class="article-highlights">
+          <span class="highlights-badge">Highlights</span>
+          <p class="highlights-text">
+            {isSEOChecklist
+              ? "After auditing 400+ sites, we separated the checks that actually correlate with ranking gains from the ones that don't. These 47—ranked by measurable impact—are the difference between sites that rank and sites that stall."
+              : article.excerpt
+            }
+          </p>
+        </div>
+
+        <!-- ── SEO Checklist: full article content ── -->
+        {isSEOChecklist && (
+          <div>
+            <h2 id="crawlability">Crawlability &amp; Indexation (Checks 1–12)</h2>
+            <p>Before any ranking factor matters, Google has to find and index your content. Half the sites we audit have preventable crawlability issues actively suppressing their rankings.</p>
+
+            <h3 id="robots-sitemap">Robots.txt &amp; XML Sitemap (Checks 1–5)</h3>
+            <ul>
+              <li><strong>Check 1: Robots.txt blocks no critical pages.</strong> Run your robots.txt through Google's testing tool and verify your main content directories aren't accidentally disallowed.</li>
+              <li><strong>Check 2: XML sitemap contains only indexable URLs.</strong> Remove redirected, noindexed, and 404 pages from your sitemap. Googlebot reads your sitemap as a quality signal.</li>
+              <li><strong>Check 3: Sitemap is submitted to Search Console.</strong> Not submitted means slower content discovery — especially for new or updated pages.</li>
+              <li><strong>Check 4: Sitemap regenerates automatically on publish.</strong> Static sitemaps go stale. Use a plugin or script that rebuilds the sitemap every time content changes.</li>
+              <li><strong>Check 5: Hreflang is correct in sitemap for multilingual sites.</strong> Mismatched hreflang is one of the most common — and most damaging — international SEO errors we encounter.</li>
+            </ul>
+
+            <h3 id="crawl-budget">Crawl Budget &amp; Index Health (Checks 6–12)</h3>
+            <ul>
+              <li><strong>Check 6: Index coverage report shows under 5% excluded URLs.</strong> Log into Search Console. If you're over 20% excluded, you have an index bloat problem that's diluting crawl budget.</li>
+              <li><strong>Check 7: Internal noindex pages aren't linked from indexed pages.</strong> Links to noindex pages waste crawl budget and distort internal link equity distribution.</li>
+              <li><strong>Check 8: No session-ID parameters generating duplicate URLs.</strong> Dynamic parameters create duplicate content at scale. Use URL normalization or canonical tags to consolidate.</li>
+              <li><strong>Check 9: Faceted navigation is handled consistently.</strong> E-commerce sites: use canonical tags <em>or</em> disallow facets in robots.txt — not both. Conflicting signals confuse crawlers.</li>
+              <li><strong>Check 10: Pagination is applied consistently across all templates.</strong> Whether you use self-referencing canonicals or paginated page numbers, apply the same pattern site-wide.</li>
+              <li><strong>Check 11: Orphaned pages have at least one internal link pointing to them.</strong> Pages with no internal links get crawled infrequently. Run a programmatic audit against your sitemap to identify them.</li>
+              <li><strong>Check 12: Log file analysis confirms Googlebot crawling high-priority pages.</strong> If you have server log access, use Screaming Frog Log Analyzer to verify crawl distribution matches your priority pages.</li>
+            </ul>
+
+            <h2 id="core-web-vitals">Core Web Vitals (Checks 13–22)</h2>
+            <p>Core Web Vitals are a confirmed ranking signal. More importantly, poor CWV directly predicts higher bounce rates and lower conversion rates. Fix them for users first — rankings follow.</p>
+
+            <h3 id="lcp">LCP: Largest Contentful Paint (Checks 13–15)</h3>
+            <p>LCP measures how long it takes the largest visible element to render. The 2026 "Good" threshold is under 2.5 seconds on mobile.</p>
+            <ul>
+              <li><strong>Check 13: LCP element is identified and targeted.</strong> Use PageSpeed Insights or Chrome DevTools to pinpoint your LCP element. For most pages, it's the hero image or H1 text block.</li>
+              <li><strong>Check 14: Hero images use fetchpriority="high".</strong> This single attribute is the highest-impact LCP improvement available. Add it to every above-the-fold hero image across all page templates.</li>
+              <li><strong>Check 15: No render-blocking resources delay the LCP element.</strong> Defer non-critical CSS and JS. Every 100ms of render-blocking adds roughly 100ms to LCP — it's a 1:1 relationship.</li>
+            </ul>
+
+            <h3 id="cls">CLS: Cumulative Layout Shift (Checks 16–18)</h3>
+            <p>CLS measures visual instability — elements jumping around as the page loads. The "Good" threshold is under 0.1. Even minor shifts are noticeable and erode user trust.</p>
+            <ul>
+              <li><strong>Check 16: Images have explicit width and height attributes.</strong> Without declared dimensions, the browser can't reserve space, causing layout shifts on load completion.</li>
+              <li><strong>Check 17: Ads, embeds, and iframes have pre-reserved space.</strong> Dynamically injected content is the #1 CLS culprit. Reserve space with CSS min-height before content loads.</li>
+              <li><strong>Check 18: No custom font FOUT causing layout shifts.</strong> Use font-display: swap and preload critical fonts. Better yet: use system fonts for critical text where brand flexibility allows.</li>
+            </ul>
+
+            <h3 id="inp">INP: Interaction to Next Paint (Checks 19–22)</h3>
+            <p>INP replaced FID as a Core Web Vital in March 2024. It measures responsiveness across all user interactions, not just the first. The "Good" threshold is under 200ms.</p>
+            <ul>
+              <li><strong>Check 19: No long tasks block the main thread for over 50ms.</strong> Long tasks block all user interaction. Use Chrome's Performance tab to identify and break up tasks exceeding 50ms.</li>
+              <li><strong>Check 20: Event handlers do minimal synchronous work.</strong> Move heavy computation off the main thread using Web Workers or async patterns where possible.</li>
+              <li><strong>Check 21: Third-party scripts don't block interaction.</strong> Tag managers, chat widgets, and analytics scripts are common INP culprits. Audit impact with WebPageTest's blocking breakdown.</li>
+              <li><strong>Check 22: INP is tracked in field data, not just lab data.</strong> CrUX data and Real User Monitoring often tell a very different story than PageSpeed Insights. Both sources are required for an accurate picture.</li>
+            </ul>
+
+            <h2 id="on-page">On-Page Technical Signals (Checks 23–31)</h2>
+            <p>These are the most commonly audited checks — and the most commonly half-done. The ranking differences are in the details, not the checklist items themselves.</p>
+
+            <h3 id="title-meta">Title Tags &amp; Meta Descriptions (Checks 23–25)</h3>
+            <ul>
+              <li><strong>Check 23: Every page has a unique title tag under 60 characters.</strong> Duplicate titles are a crawl quality signal. Never let your CMS auto-generate titles from H1s without a unique pattern.</li>
+              <li><strong>Check 24: Title tags front-load the primary keyword.</strong> Google rewrites titles that are too long or keyword-stuffed. Keyword placement within the first 60 characters generally sticks.</li>
+              <li><strong>Check 25: Meta descriptions exist and are under 160 characters.</strong> Meta descriptions don't directly affect rankings. But click-through rates do. Write them for humans scanning SERPs.</li>
+            </ul>
+
+            <h3 id="headings-canonicals">Heading Structure &amp; Canonicals (Checks 26–28)</h3>
+            <ul>
+              <li><strong>Check 26: Each page has exactly one H1 tag.</strong> Multiple H1s aren't a documented penalty, but they dilute semantic clarity. One H1 per page is the clear standard.</li>
+              <li><strong>Check 27: Canonical tags point to the correct preferred version.</strong> Self-referencing canonicals are fine. Verify that paginated, filtered, and parameterized pages point to the intended canonical URL — not themselves or the wrong page.</li>
+              <li><strong>Check 28: HTTPS is consistently the canonical version.</strong> Search Console should show zero mixed-content issues. Your canonical tag must always reference the HTTPS URL.</li>
+            </ul>
+
+            <h3 id="duplicate-thin">Duplicate Content &amp; Thin Pages (Checks 29–31)</h3>
+            <ul>
+              <li><strong>Check 29: No significant duplicate content exists at scale.</strong> E-commerce category and location pages are the most frequent offenders. Use Siteliner or Copyscape for a bulk content similarity audit.</li>
+              <li><strong>Check 30: Thin pages under 300 words are either improved or noindexed.</strong> Google has been explicit: thin content is a quality signal. If a page can't justify 300 words of genuinely unique content, it shouldn't consume index budget.</li>
+              <li><strong>Check 31: WWW vs. non-WWW is consolidated with a 301 redirect.</strong> Pick one canonical domain version and redirect all others. Check Search Console's Coverage report for discrepancies.</li>
+            </ul>
+
+            <h2 id="structured-data">Structured Data &amp; Schema Markup (Checks 32–38)</h2>
+            <p>Schema doesn't directly improve rankings, but rich results — which require structured data — significantly impact CTR. For eligible page types, missing schema is a missed opportunity at scale.</p>
+
+            <h3 id="schema-implementation">Schema Implementation (Checks 32–35)</h3>
+            <ul>
+              <li><strong>Check 32: Site-level Organization and BreadcrumbList schema is present.</strong> Organization schema belongs on your homepage. BreadcrumbList on every page helps Search Console parse your site structure accurately.</li>
+              <li><strong>Check 33: Article schema is implemented on all blog and editorial posts.</strong> Required fields: headline, datePublished, dateModified, author, and image. All are necessary for Article rich result eligibility.</li>
+              <li><strong>Check 34: Product schema includes offers, aggregateRating, and SKU.</strong> Google requires price and availability data in Product schema for Shopping eligibility. Missing fields silently disqualify pages.</li>
+              <li><strong>Check 35: FAQ schema is used only on genuine FAQ content.</strong> Google significantly reduced FAQ rich result appearances in 2024. Only implement where the FAQ format genuinely serves users — not as a ranking tactic.</li>
+            </ul>
+
+            <h3 id="rich-results">Rich Results Eligibility (Checks 36–38)</h3>
+            <ul>
+              <li><strong>Check 36: All schema is validated with Google's Rich Results Test.</strong> Run every schema-enabled template through this tool. Common failure modes: missing required fields and incorrect data types.</li>
+              <li><strong>Check 37: No schema is implemented for content types you don't publish.</strong> Review schema on pages with no user reviews is a manual action risk. Schema must reflect actual on-page content.</li>
+              <li><strong>Check 38: Schema entities match the visible on-page content.</strong> Discrepancies between markup and visible content can trigger manual actions. Validate schema against live rendered page content, not just source HTML.</li>
+            </ul>
+
+            <h2 id="page-speed">Page Speed &amp; Core Infrastructure (Checks 39–47)</h2>
+            <p>Server performance and asset delivery affect rankings via Core Web Vitals and crawl budget allocation. These checks address the infrastructure layer that everything else depends on.</p>
+
+            <h3 id="server-hosting">Server &amp; Hosting Performance (Checks 39–41)</h3>
+            <ul>
+              <li><strong>Check 39: Time to First Byte is under 800ms.</strong> TTFB above 800ms is a "Needs Improvement" signal for Core Web Vitals. For most sites, a CDN or server-side edge caching resolves this without code changes.</li>
+              <li><strong>Check 40: Hosting uses a CDN for static assets.</strong> Without a CDN, international visitors face geographic latency that tanks Core Web Vitals field data regardless of how well-optimized your code is.</li>
+              <li><strong>Check 41: Server consistently returns correct HTTP status codes.</strong> Intermittent 5xx errors are hard to catch manually but devastating for crawl budget. Set up uptime monitoring with error-rate alerting.</li>
+            </ul>
+
+            <h3 id="image-optimization">Image &amp; Asset Optimization (Checks 42–44)</h3>
+            <ul>
+              <li><strong>Check 42: Images are compressed and served in WebP or AVIF.</strong> WebP saves 25–35% over JPEG at equivalent quality. AVIF saves another 20% on top of WebP. Both have 95%+ browser support in 2026.</li>
+              <li><strong>Check 43: Below-fold images use loading="lazy".</strong> Lazy loading reduces initial page weight measurably. The one exception: above-the-fold images must always eager-load to avoid LCP regressions.</li>
+              <li><strong>Check 44: No oversized images served at inflated dimensions.</strong> A 2000px image displayed at 400px wastes 5× the bandwidth. Use the srcset attribute to serve appropriately sized images per viewport.</li>
+            </ul>
+
+            <h3 id="js-css">JavaScript &amp; CSS Optimization (Checks 45–47)</h3>
+            <ul>
+              <li><strong>Check 45: JavaScript execution time is under 3.5 seconds total.</strong> High JS execution time is the most common cause of poor INP scores. Audit with Chrome DevTools → Performance tab → Bottom-Up view.</li>
+              <li><strong>Check 46: Unused CSS is removed or deferred.</strong> Use PurgeCSS or browser coverage tools to identify and strip styles that are never applied. Unused CSS bloats the initial download without contributing to rendering.</li>
+              <li><strong>Check 47: Critical CSS for the initial viewport is inlined.</strong> Inlining the CSS that renders your above-the-fold content eliminates render-blocking stylesheet requests from the critical path entirely.</li>
+            </ul>
+          </div>
+        )}
+
+        <!-- ── Placeholder body for other articles ── -->
+        {!isSEOChecklist && (
+          <div>
+            <h2 id="introduction">Introduction</h2>
+            <p>
+              {article.excerpt} This article dives deep into the data, frameworks,
+              and implementation steps that will help you replicate these results
+              in your own programs.
+            </p>
+
+            <CalloutBox variant="tip" title="Before you start">
+              Make sure you have access to your analytics platform and any relevant
+              dashboards. Verify results as you implement each section.
+            </CalloutBox>
+
+            <h2 id="methodology">Methodology</h2>
+            <p>
+              Our analysis covered 400+ campaigns across the {article.niche} channel
+              over an 18-month period. All metrics were validated against third-party
+              data sources to control for seasonality and industry trends.
+            </p>
+
+            <h2 id="key-findings">Key Findings</h2>
+            <p>Replace this placeholder with the real article body content.</p>
+          </div>
+        )}
+
+      </div>
+      <!-- end .article-body -->
+
+      <!-- ── 6. Actionable steps ────────────────────────────────────────── -->
+      <section class="article-action-steps" aria-labelledby="action-steps-heading">
+        <h2 id="action-steps-heading" class="action-steps-title">Actionable Steps</h2>
+
+        {isSEOChecklist ? (
+          <ol class="action-steps-list">
+            <li class="action-step">
+              <div class="action-step-num" aria-hidden="true">1</div>
+              <div class="action-step-content">
+                <strong>Run a full crawl audit.</strong> Use Screaming Frog or Sitebulb to surface crawl errors, redirect chains, and missing canonicals. Export to a spreadsheet and triage by frequency and page priority.
+              </div>
+            </li>
+            <li class="action-step">
+              <div class="action-step-num" aria-hidden="true">2</div>
+              <div class="action-step-content">
+                <strong>Fix indexation issues in Google Search Console.</strong> Open Coverage and filter to "Error" and "Excluded." Address "Submitted URL marked noindex" and "Discovered – currently not indexed" first — these represent pages you want ranked that Google is skipping.
+              </div>
+            </li>
+            <li class="action-step">
+              <div class="action-step-num" aria-hidden="true">3</div>
+              <div class="action-step-content">
+                <strong>Prioritise Core Web Vitals by traffic volume.</strong> Use CrUX data to identify your highest-traffic page templates, then resolve LCP and INP there first. One template fix often resolves CWV issues across hundreds of pages simultaneously.
+              </div>
+            </li>
+            <li class="action-step">
+              <div class="action-step-num" aria-hidden="true">4</div>
+              <div class="action-step-content">
+                <strong>Implement schema for all eligible page types.</strong> At minimum: Article, BreadcrumbList, Organisation, and — where applicable — Product or FAQ. Validate each template with Google's Rich Results Test before deploying to production.
+              </div>
+            </li>
+            <li class="action-step">
+              <div class="action-step-num" aria-hidden="true">5</div>
+              <div class="action-step-content">
+                <strong>Set up continuous monitoring.</strong> Configure GSC email alerts for critical errors, Uptime Robot for server health, and a CrUX dashboard to track field data week over week. Technical SEO regressions are far cheaper to fix when caught early.
+              </div>
+            </li>
+          </ol>
+        ) : (
+          <ol class="action-steps-list">
+            <li class="action-step">
+              <div class="action-step-num" aria-hidden="true">1</div>
+              <div class="action-step-content">
+                <strong>Audit your current baseline.</strong> Before making changes, document your starting metrics so you can attribute improvements accurately.
+              </div>
+            </li>
+            <li class="action-step">
+              <div class="action-step-num" aria-hidden="true">2</div>
+              <div class="action-step-content">
+                <strong>Identify the highest-impact change.</strong> Review the findings above and select the one that applies most directly to your current situation.
+              </div>
+            </li>
+            <li class="action-step">
+              <div class="action-step-num" aria-hidden="true">3</div>
+              <div class="action-step-content">
+                <strong>Implement one change at a time.</strong> Changing multiple variables simultaneously makes attribution impossible. Measure each change for 14 days before moving to the next.
+              </div>
+            </li>
+          </ol>
+        )}
+      </section>
+
+      <!-- ── 7. Subscribe ───────────────────────────────────────────────── -->
+      <div class="article-subscribe">
+        <NewsletterSignup client:idle />
+      </div>
+
+      <!-- ── Article footer ─────────────────────────────────────────────── -->
       <footer class="article-footer">
-        <!-- Tags -->
+
+        <!-- ── 8. Tags ─────────────────────────────────────────────────── -->
         <div class="article-footer-tags">
           <span class="article-footer-tags-label">Filed under:</span>
           {article.tags.map((tag) => (
@@ -279,24 +368,99 @@ const schemaJson = JSON.stringify({
           ))}
         </div>
 
-        <!-- Bottom share bar -->
-        <ShareBar client:idle url={canonicalUrl} title={article.title} />
+        <!-- ── 9. Sharing ──────────────────────────────────────────────── -->
+        <div class="article-footer-share">
+          <span class="article-footer-share-label">Share this article:</span>
+          <ShareBar client:idle url={canonicalUrl} title={article.title} />
+        </div>
 
-        <!-- Author bio -->
-        <div class="author-bio-full">
-          <div class="author-avatar author-avatar--lg" aria-hidden="true">
-            {article.author.initials}
+        <!-- ── 10. Author bio ──────────────────────────────────────────── -->
+        <div class="author-bio-card">
+          <div class="author-bio-card-header">
+            <div class="author-avatar-lg" aria-hidden="true">
+              {article.author.initials}
+            </div>
+            <div class="author-bio-card-info">
+              <h3 class="author-bio-card-name">{article.author.name}</h3>
+              <p class="author-bio-card-role">{article.author.role}, GTM Remixed</p>
+            </div>
           </div>
-          <div class="author-bio-content">
-            <h3 class="author-bio-name">{article.author.name}</h3>
-            <p class="author-bio-role">{article.author.role}, GTM Remixed</p>
-            <p class="author-bio-blurb">
-              {article.author.name} leads {article.niche} strategy at GTM Remixed,
-              with 8+ years of hands-on experience running campaigns across
-              enterprise and growth-stage B2B companies.
-            </p>
+
+          <p class="author-bio-card-blurb">
+            {article.author.bio ??
+              `${article.author.name} leads ${article.niche} strategy at GTM Remixed, with 8+ years of hands-on experience running campaigns across enterprise and growth-stage B2B companies.`}
+          </p>
+
+          <div class="author-social-row">
+            <div class="author-social-links">
+              {article.author.linkedin && (
+                <a
+                  href={article.author.linkedin}
+                  class="author-social-link"
+                  aria-label={`${article.author.name} on LinkedIn`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                  </svg>
+                  LinkedIn
+                </a>
+              )}
+              {article.author.twitter && (
+                <a
+                  href={article.author.twitter}
+                  class="author-social-link"
+                  aria-label={`${article.author.name} on X`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
+                  </svg>
+                  X (Twitter)
+                </a>
+              )}
+              {article.author.instagram && (
+                <a
+                  href={article.author.instagram}
+                  class="author-social-link"
+                  aria-label={`${article.author.name} on Instagram`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                  Instagram
+                </a>
+              )}
+              {article.author.email && (
+                <a
+                  href={`mailto:${article.author.email}`}
+                  class="author-social-link"
+                  aria-label={`Email ${article.author.name}`}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                  Email
+                </a>
+              )}
+            </div>
+
+            <a
+              href={`mailto:${article.author.email ?? 'hello@gtmremixed.com'}`}
+              class="btn btn-secondary author-reach-out-btn"
+            >
+              Reach out to {article.author.name.split(' ')[0]} →
+            </a>
           </div>
         </div>
+
       </footer>
     </article>
   </div>
